@@ -1,6 +1,6 @@
     </div>
 
-    <script src="/admin/js/main.js"></script>
+    <script src="/assests/js/admin.js"></script>
 
     </body>
 

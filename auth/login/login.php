@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . "/../../includes/header.php";
 if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
-    header("Location: /index.php");
-    exit;
+  header("Location: /index.php");
+  exit;
 }
 ?>
 
@@ -22,22 +22,21 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
         </div>
 
         <div class="input-group">
-  <label for="registration_no">Registration Number</label>
-  <div class="input-field-wrapper">
-    <input 
-      type="password"
-      id="registration_no"
-      name="registration_no"
-      placeholder="Enter Registration Number"
-      required
-    >
-    <i class="fas fa-id-card icon"></i>
-    <button type="button" class="toggle-password">
-      <i class="far fa-eye-slash"></i>
-    </button>
-  </div>
-  <div class="error-message" id="registrationError"></div>
-</div>
+          <label for="registration_no">Registration Number</label>
+          <div class="input-field-wrapper">
+            <input
+              type="password"
+              id="registration_no"
+              name="registration_no"
+              placeholder="Enter Registration Number"
+              required>
+            <i class="fas fa-id-card icon"></i>
+            <button type="button" class="toggle-password">
+              <i class="far fa-eye-slash"></i>
+            </button>
+          </div>
+          <div class="error-message" id="registrationError"></div>
+        </div>
 
 
         <button type="submit" class="btn btn-primary login-btn">Log In Securely</button>
@@ -46,16 +45,12 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
           <i class="fas fa-spinner fa-spin"></i> Logging In
         </div>
       </form>
-
-      <div class="signup-link">
-        <p>Don't have an account? <a href="../signup/signup.php">Sign Up</a></p>
-      </div>
     </div>
   </div>
 </section>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
     const registrationInput = document.getElementById("registration_no");
@@ -66,55 +61,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     [emailInput, registrationInput].forEach(input => {
-        input.addEventListener("input", () => {
-            emailError.textContent = "";
-            registrationError.textContent = "";
-            generalError.textContent = "";
-        });
-    });
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-
+      input.addEventListener("input", () => {
         emailError.textContent = "";
         registrationError.textContent = "";
         generalError.textContent = "";
-
-        spinner.style.display = "block";
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const formData = new FormData(form);
-        formData.set("email", emailInput.value.trim());
-        formData.set("registration_no", registrationInput.value.trim());
-
-        try {
-            const response = await fetch("handler.php", { method: "POST", body: formData });
-            const data = await response.json();
-
-            spinner.style.display = "none";
-
-            if (data.status === "success") {
-                generalError.style.color = "green";
-                generalError.textContent = data.message;
-                setTimeout(() => {
-                    if (data.redirect) window.location.href = data.redirect;
-                }, 2000);
-            } else {
-                if (data.field === "email") emailError.textContent = data.message;
-                else if (data.field === "registration_no") registrationError.textContent = data.message;
-                else {
-                    generalError.style.color = "red";
-                    generalError.textContent = data.message;
-                }
-            }
-        } catch (err) {
-            spinner.style.display = "none";
-            generalError.style.color = "red";
-            generalError.textContent = "An unexpected error occurred. Please try again.";
-        }
+      });
     });
-});
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+
+      emailError.textContent = "";
+      registrationError.textContent = "";
+      generalError.textContent = "";
+
+      spinner.style.display = "block";
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const formData = new FormData(form);
+      formData.set("email", emailInput.value.trim());
+      formData.set("registration_no", registrationInput.value.trim());
+
+      try {
+        const response = await fetch("handler.php", {
+          method: "POST",
+          body: formData
+        });
+        const data = await response.json();
+
+        spinner.style.display = "none";
+
+        if (data.status === "success") {
+          generalError.style.color = "green";
+          generalError.textContent = data.message;
+          setTimeout(() => {
+            if (data.redirect) window.location.href = data.redirect;
+          }, 2000);
+        } else {
+          if (data.field === "email") emailError.textContent = data.message;
+          else if (data.field === "registration_no") registrationError.textContent = data.message;
+          else {
+            generalError.style.color = "red";
+            generalError.textContent = data.message;
+          }
+        }
+      } catch (err) {
+        spinner.style.display = "none";
+        generalError.style.color = "red";
+        generalError.textContent = "An unexpected error occurred. Please try again.";
+      }
+    });
+  });
 </script>
 
 <?php require __DIR__ . "/../../includes/footer.php"; ?>
