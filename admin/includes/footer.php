@@ -1,0 +1,7 @@
+    </div>
+
+    <script src="/admin/js/main.js"></script>
+
+    </body>
+
+    </html>

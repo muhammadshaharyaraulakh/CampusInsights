@@ -1,0 +1,445 @@
+/* ==================================== MEDIA QUERIES (RESPONSIVENESS) ==================================== */
+
+/* Tablet / Medium Screens (Max-width: 1199px) */
+@media (max-width: 1199px) {
+    .hero h1 {
+        font-size: 3.5rem;
+    }
+}
+
+/* Tablet / Small Screens (Max-width: 991px) */
+@media (max-width: 991px) {
+
+    .nav-links,
+    .auth-links,
+    .user-menu {
+        display: none;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .about-content {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .offcanvas-auth {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+}
+
+/* Tablet to Mobile Transition (Max-width: 768px) */
+@media (max-width: 768px) {
+    /* Global Mobile Screen base adjustments (from 767px) */
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    .hero {
+        min-height: 100vh;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .social-icons {
+        justify-content: center;
+    }
+
+    .question-group.half-width {
+        width: 100%;
+        margin-right: 0;
+    }
+    
+    /* Activity Log */
+    .log-header {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    /* Survey Forms (Student/Teacher) */
+    .form-row {
+        flex-direction: column;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .question-group {
+        flex: 1 1 100%;
+    }
+
+    .survey-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .survey-section {
+        padding: 2rem 1rem;
+    }
+
+    .survey-header {
+        font-size: 1.6rem;
+    }
+
+    .success-content {
+        /* Merged from Teacher/Student survey styles */
+        padding: 20px 30px;
+    }
+
+    /* Contact Section */
+    .section-header h2 {
+        font-size: 2.2rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-row .form-group {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .form-submit .btn {
+        width: 100%;
+    }
+
+    /* About Us */
+    .about-container {
+        text-align: center;
+    }
+
+    .about-content h1 {
+        font-size: 2rem;
+    }
+
+    .about-content p {
+        font-size: 0.95rem;
+    }
+
+    .about-image {
+        flex: 1 1 80px;
+    }
+
+    .about-image img {
+        width: 470px;
+    }
+
+    /* Privacy Policy */
+    .privacy-policy {
+        padding: var(--spacing-md);
+        margin-top: var(--spacing-md);
+    }
+
+    .privacy-policy h1 {
+        font-size: 1.75rem;
+    }
+
+    .privacy-policy h2 {
+        font-size: 1.15rem;
+    }
+
+    .privacy-policy p,
+    .privacy-policy li {
+        font-size: 0.95rem;
+    }
+}
+
+/* Small Mobile Devices (Max-width: 575px) */
+@media (max-width: 575px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .offcanvas-menu {
+        width: 320px;
+    }
+
+    .login-form-card {
+        padding: var(--spacing-md);
+        margin: 0 var(--spacing-sm);
+        width: 310px;
+    }
+
+    .contact-form-card {
+        padding: var(--spacing-md);
+        margin: 0 var(--spacing-sm);
+    }
+}
+
+/* Phone Screens (Max-width: 480px) */
+@media (max-width: 480px) {
+    /* Survey & Form Adjustments */
+    .survey-section {
+        padding: 1rem;
+    }
+
+    .question-group input,
+    .question-group select {
+        font-size: 0.95rem;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .form-group select {
+        font-size: 0.9rem;
+    }
+
+    .navigation-buttons .btn {
+        width: 100%;
+    }
+
+    .survey-header {
+        font-size: 1.4rem;
+    }
+
+    /* Final Suggestions */
+    .survey-page[data-step="6"] .navigation-buttons {
+        flex-direction: column;
+    }
+
+    .survey-page[data-step="6"] .navigation-buttons .btn {
+        width: 100%;
+    }
+
+    .full-width-feedback textarea {
+        min-height: 150px;
+        font-size: 0.95rem;
+    }
+
+    /* Success Message */
+    .success-content {
+        padding: 5px 5px;
+    }
+
+    .success-content h1 {
+        font-size: 0.5rem;
+    }
+
+    /* About Us */
+    .about-image {
+        flex: 1 1 50px;
+    }
+
+    .about-content h1 {
+        font-size: 1.7rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+    }
+
+    .about-image img {
+        width: 300px;
+        height: 350px;
+    }
+
+    /* Privacy Policy */
+    .privacy-policy {
+        padding: var(--spacing-sm);
+    }
+
+    .privacy-policy h1 {
+        font-size: 1.5rem;
+    }
+
+    .privacy-policy h2 {
+        font-size: 1.1rem;
+    }
+
+    .privacy-policy p,
+    .privacy-policy li {
+        font-size: 0.9rem;
+    }
+
+    .privacy-policy ul {
+        margin-left: 1rem;
+    }
+
+    .btn-back {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+}
+
+/* Very Small Phones (Max-width: 400px) */
+@media(max-width: 400px) {
+    .error-card h1 {
+        font-size: 4rem;
+    }
+
+    .error-card h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Smallest Screens (Max-width: 320px) */
+@media (max-width: 320px) {
+    /* Final Suggestions */
+    .full-width-feedback textarea {
+        min-height: 120px;
+        font-size: 0.9rem;
+        padding: 0.8rem;
+    }
+
+    .survey-page[data-step="6"] .step-title h2 {
+        font-size: 1.5rem;
+    }
+
+    .survey-page[data-step="6"] .step-title p {
+        font-size: 0.85rem;
+    }
+
+    /* About Us */
+    .about-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .about-content p {
+        font-size: 0.85rem;
+    }
+
+    .about-image img {
+        width: fit-content !important;
+        height: 400px;
+    }
+
+    /* Privacy Policy */
+    .privacy-policy {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .privacy-policy h1 {
+        font-size: 1.25rem;
+    }
+
+    .privacy-policy h2 {
+        font-size: 1rem;
+    }
+
+    .privacy-policy p,
+    .privacy-policy li {
+        font-size: 0.85rem;
+    }
+
+    .btn-back {
+        font-size: 0.9rem;
+        padding: 0.65rem 1rem;
+    }
+}
+/* ==================================== ACTIVITY LOG RESPONSIVENESS ==================================== */
+
+/* Tablet & Smaller Screens (Max-width: 768px) */
+@media (max-width: 768px) {
+    /* Main container spacing */
+    .container-activity {
+        margin-top: var(--spacing-md);
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
+
+    /* Log Card adjustments */
+    .log-card {
+        padding: 0.9rem;
+    }
+
+    /* Header stacking */
+    .log-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem; /* Add space between type and date */
+        margin-bottom: 0.75rem;
+    }
+
+    /* Ensure log type remains clear */
+    .log-type {
+        font-size: 0.9rem;
+    }
+
+    /* Reduce font size for detailed info */
+    .log-details {
+        font-size: 0.85rem;
+        color: var(--color-text); /* Make the main details easier to read */
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Style for the 'Accessed via' details from PHP */
+    .log-details i {
+        color: var(--color-primary);
+        margin-right: 5px;
+    }
+
+    /* Raw Data Summary Toggle */
+    .log-details details summary {
+        font-size: 0.8rem;
+        color: var(--color-gray);
+    }
+    
+    .log-details details div {
+        font-size: 0.75rem;
+    }
+}
+
+/* Small Mobile Devices (Max-width: 480px) */
+@media (max-width: 480px) {
+    .container-activity h1 {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .activity-log {
+        gap: 0.75rem;
+    }
+
+    .log-card {
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+
+    .log-header {
+        font-size: 0.9rem;
+    }
+    
+    /* Ensure the type badge still looks good */
+    .log-type {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .log-details {
+        font-size: 0.8rem;
+    }
+}

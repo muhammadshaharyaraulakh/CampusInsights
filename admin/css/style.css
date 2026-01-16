@@ -1,0 +1,797 @@
+
+/* ====================================
+   1. CSS Variables and Base Styles
+   ==================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    /* Color Palette (Aesthetic, Unique) */
+    --color-primary: #6c5ce7; /* Soft Deep Purple */
+    --color-secondary: #ff7675; /* Coral/Accent */
+    --color-background: #f5f6fa; /* Light Off-White */
+    --color-text: #2d3436; /* Dark Charcoal */
+    --color-light: #ffffff;
+    --color-gray: #a29bfe; /* Lighter Purple tone */
+    --color-input-bg: #e8eaf6;
+    --color-danger: #e74c3c;
+    
+    /* Typography */
+    --font-family: 'Poppins', sans-serif;
+    --font-size-base: 16px;
+    
+    /* Spacing & Effects */
+    --spacing-lg: 3rem;
+    --spacing-md: 1.5rem;
+    --spacing-sm: 1rem;
+    --border-radius: 12px;
+    --transition-speed: 0.3s; /* Reduced speed for snappier feel */
+    /* UPDATED: Reduced shadow depth for simplicity */
+    --shadow-subtle: 0 4px 10px rgba(0, 0, 0, 0.04); 
+    --shadow-depth: 0 8px 20px rgba(0, 0, 0, 0.08); 
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    font-size: var(--font-size-base);
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-primary);
+    transition: color var(--transition-speed);
+}
+
+a:hover {
+    color: var(--color-secondary);
+}
+
+h1, h2, h3 {
+    margin-bottom: var(--spacing-sm);
+    font-weight: 700;
+}
+
+section {
+    padding: var(--spacing-lg) 0;
+    overflow: hidden;
+}
+
+/* --- RESPONSIVE FIX: Remove max-width on the general container --- */
+.container {
+    /* max-width: 1200px; <-- Removed to allow full width on large screens */
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Utility Classes */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+    border: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+}
+
+.btn-primary:hover {
+    background-color: #5544d0;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 0.75rem 1.5rem; /* Adjusted for visual balance */
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+    transform: none;
+}
+
+/* Scroll Fade In Animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 1s cubic-bezier(0.17, 0.67, 0.83, 0.67), transform 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* ====================================
+   2. ADMIN LAYOUT & CORE STRUCTURE
+   ==================================== */
+
+/* --- 2.1 Base Layout --- */
+.admin-page {
+    /* Fixed sidebar width for desktop */
+    display: grid;
+    grid-template-columns: 280px 1fr; 
+    min-height: 100vh;
+}
+
+.main-wrapper {
+    grid-column: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--color-background);
+}
+
+
+/* --- 2.2 Sidebar Styles --- */
+.sidebar {
+    background-color: var(--color-light);
+    box-shadow: var(--shadow-depth);
+    position: fixed; 
+    height: 100%;
+    width: 280px;
+    z-index: 1000;
+    transition: transform var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / 2;
+}
+
+.sidebar-header {
+    padding: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-input-bg);
+}
+
+.logo-icon {
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-right: 10px;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+/* Navigation List */
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 1rem var(--spacing-md);
+    color: var(--color-text);
+    border-left: 5px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li.active a {
+    background-color: var(--color-input-bg);
+    color: var(--color-primary);
+    border-left-color: var(--color-primary);
+    font-weight: 600;
+}
+
+.sidebar-nav li a i {
+    margin-right: var(--spacing-sm);
+    font-size: 1.1rem;
+}
+
+.sidebar-footer {
+    padding: var(--spacing-md);
+    margin-top: auto;
+    border-top: 1px solid var(--color-input-bg);
+}
+
+.btn-logout {
+    width: 100%;
+    text-align: center;
+    background-color: var(--color-danger);
+    color: var(--color-light);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+}
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+
+/* --- 2.3 Top Bar --- */
+.topbar {
+    background-color: var(--color-light);
+    padding: 0.8rem var(--spacing-md);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.menu-toggle {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    cursor: pointer;
+    margin-right: var(--spacing-md);
+    display: none; 
+}
+
+
+/* --- 2.4 Dashboard Body --- */
+.dashboard-body {
+    padding: var(--spacing-md);
+    flex-grow: 1;
+    /* NOTE: Since we removed max-width from .container, this ensures the content stretches */
+}
+
+.page-title {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text);
+}
+
+
+/* ====================================
+   3. KPI STATS CARDS & ANIMATIONS
+   ==================================== */
+.stats-grid {
+    display: grid;
+    /* Ensure robust fit from 2 to 4 columns */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat-card {
+    background-color: var(--color-light);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-subtle); /* Used softer shadow */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    border-left: 4px solid; /* Slightly thinner border */
+    overflow: hidden;
+    transition: all var(--transition-speed);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px); /* Smaller lift */
+    box-shadow: var(--shadow-depth);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    padding: 10px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.03); /* Lighter background */
+}
+
+/* Color definitions remain the same, ensuring visual distinction */
+.stat-card.primary-border { border-color: var(--color-primary); }
+.stat-card.primary-border .stat-icon { color: var(--color-primary); }
+
+.stat-card.secondary-border { border-color: var(--color-secondary); }
+.stat-card.secondary-border .stat-icon { color: var(--color-secondary); }
+
+.stat-card.info-border { border-color: #3498db; }
+.stat-card.info-border .stat-icon { color: #3498db; }
+
+.stat-card.warning-border { border-color: #f39c12; }
+.stat-card.warning-border .stat-icon { color: #f39c12; }
+
+.stat-info { 
+    margin-left: var(--spacing-sm);
+    text-align: right;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+/* ====================================
+   4. DATA PANELS & TABLES
+   ==================================== */
+
+.data-section-grid {
+    display: grid;
+    /* Adjusted ratios slightly for better balance on large screens */
+    grid-template-columns: 3fr 1.5fr; 
+    gap: var(--spacing-md);
+}
+
+.panel {
+    background-color: var(--color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-subtle);
+    padding: var(--spacing-md);
+    transition: box-shadow var(--transition-speed);
+}
+
+.panel:hover {
+    box-shadow: var(--shadow-depth);
+}
+
+.panel-header {
+    border-bottom: 1px solid var(--color-input-bg);
+    padding-bottom: 10px;
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Table Styling */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.data-table thead tr {
+    background-color: var(--color-input-bg);
+    font-weight: 600;
+}
+
+.data-table tbody tr {
+    border-bottom: 1px solid #f0f0f5;
+    transition: background-color 0.3s;
+}
+
+.data-table tbody tr:hover {
+    background-color: rgba(108, 92, 231, 0.05);
+}
+
+.btn-table-action {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+.btn-table-action:hover {
+    transform: scale(1.1);
+}
+
+/* Tags/Badges */
+.tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.tag-new { background-color: #2ecc7120; color: #2ecc71; }
+.tag-read { background-color: var(--color-primary)20; color: var(--color-primary); }
+.tag-export { background-color: #f1c40f20; color: #f1c40f; }
+
+/* Quick Actions Button Animation */
+.action-list .btn {
+    margin-bottom: 15px;
+    border-radius: var(--border-radius); /* Use square radius here for block buttons */
+}
+.animate-hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.animate-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.chart-box {
+    height: 150px;
+    background-color: var(--color-input-bg);
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Add these styles to your existing style.css */
+
+/* ------------------------------------
+   6. VIEW/ARCHIVE PAGE COMPONENTS
+   ------------------------------------ */
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    align-items: center;
+    box-shadow: var(--shadow-subtle);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+
+.form-control,
+.form-control-inline {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dcdcdc;
+    border-radius: var(--border-radius);
+    background-color: var(--color-light);
+    transition: border-color var(--transition-speed);
+}
+
+.form-control:focus,
+.form-control-inline:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.form-control-inline {
+    width: 150px; /* Specific width for date inputs */
+}
+
+.filter-actions {
+    margin-left: auto; /* Push action buttons to the right */
+    display: flex;
+    gap: 10px;
+}
+
+/* Pagination Footer */
+.pagination-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px var(--spacing-md);
+    border-top: 1px solid var(--color-input-bg);
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px; /* Slightly smaller radius for small buttons */
+}
+
+/* Table Text Colors for Ratings */
+.text-rating {
+    font-weight: 700;
+}
+.text-danger { color: var(--color-danger); }
+.text-success { color: #2ecc71; }
+.text-warning { color: #f39c12; }
+
+/* Responsive utility classes (from Tailwind-like practice, added to the existing CSS) */
+/* Hide on small/mobile screens */
+@media (max-width: 767px) {
+    .d-none { display: none !important; }
+}
+/* Hide on medium screens (tablets) */
+@media (max-width: 991px) {
+    .d-md-table-cell { display: none !important; }
+}
+/* Hide on large screens (desktops) */
+@media (max-width: 1200px) {
+    .d-lg-table-cell { display: none !important; }
+}
+
+/* Ensure table cells display properly when visible */
+.data-table .d-md-table-cell,
+.data-table .d-lg-table-cell {
+    display: table-cell;
+}
+
+/* Mobile Adjustments for Filter Bar */
+@media (max-width: 600px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+    }
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    .form-control-inline {
+        width: 100%; /* Full width for dates on mobile */
+    }
+    .filter-actions {
+        margin-left: 0;
+        justify-content: space-between;
+    }
+}
+/* Add these new styles to the end of your style.css */
+
+/* ------------------------------------
+   7. EXPORT PAGE COMPONENTS
+   ------------------------------------ */
+
+.export-form-grid {
+    display: grid;
+    /* Two columns by default */
+    grid-template-columns: 1fr 1fr; 
+    gap: var(--spacing-md);
+    align-items: end; /* Align buttons/inputs nicely */
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-field label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dcdcdc;
+    border-radius: var(--border-radius);
+    background-color: var(--color-light);
+}
+
+.form-submit-area {
+    /* Ensure the submit button starts below the fields */
+    grid-column: 1 / -1; 
+    margin-top: var(--spacing-sm);
+}
+
+/* Ensure block buttons stretch */
+.btn-block {
+    width: 100%;
+}
+
+/* Responsive Adjustments for Export Page */
+@media (max-width: 991px) {
+    .export-form-grid {
+        /* On tablet, switch to a single column layout */
+        grid-template-columns: 1fr;
+    }
+    .form-submit-area {
+        grid-column: 1 / 2; /* Reset column span for mobile stack */
+    }
+}
+/* Update this section in your style.css */
+
+/* Update the LOGIN PAGE section in your style.css */
+
+/* ------------------------------------
+   8. LOGIN PAGE - SIMPLIFIED
+   ------------------------------------ */
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Simplified background: light and clean */
+    background-color: var(--color-background); 
+}
+
+.login-form-wrapper {
+    width: 100%;
+    max-width: 400px; /* Still maintains a comfortable reading width */
+    padding: var(--spacing-lg) var(--spacing-md); /* Add consistent padding */
+    text-align: center;
+}
+
+.login-header {
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    /* Lighter border for subtlety */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08); 
+}
+
+.login-header .logo-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: var(--color-primary); /* Keep brand color */
+}
+
+.login-header h2 {
+    font-size: 1.8rem;
+    color: var(--color-text); /* Use main text color */
+    margin: 0;
+}
+
+.login-header p {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+/* Form Styling (mostly retained, as these were functional) */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray);
+    font-size: 1rem;
+}
+
+.input-icon-wrapper input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 45px; /* Added padding-left for icon */
+    border: 1px solid #dcdcdc;
+    border-radius: var(--border-radius);
+    background-color: var(--color-input-bg);
+    transition: all var(--transition-speed);
+}
+
+.input-icon-wrapper input:focus {
+    border-color: var(--color-primary);
+    background-color: var(--color-light);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+    outline: none;
+}
+
+.login-btn {
+    margin-top: var(--spacing-sm);
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    /* Removed specific hover transform for simplicity */
+}
+
+.forgot-password {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+/* No specific media queries needed for this page due to max-width */
+/* ====================================
+   5. FULL RESPONSIVENESS & MOBILE LAYOUT
+   ==================================== */
+
+/* --- Tablet/Medium Screens (Collapse Data Grid) --- */
+@media (max-width: 1024px) {
+    .data-section-grid {
+        grid-template-columns: 1fr; /* Stack columns vertically */
+    }
+    
+    /* Allow stats grid to reduce density on tablets */
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+    }
+}
+
+/* --- Mobile/Small Screens (Collapse Sidebar) --- */
+@media (max-width: 768px) {
+    
+    /* 1. Remove Desktop Grid Layout */
+    .admin-page {
+        grid-template-columns: 1fr; /* Single column */
+    }
+    .main-wrapper {
+        grid-column: 1 / 2;
+    }
+    
+    /* 2. Show Mobile Toggle Button */
+    .menu-toggle {
+        display: block; 
+    }
+    
+    /* 3. Manage Sidebar Position (Hidden by default) */
+    .sidebar {
+        transform: translateX(-100%); 
+        width: 250px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 4. Active Sidebar State (Toggled by JS) */
+    .admin-page.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+    
+    /* 5. Adjust Topbar elements */
+    .user-info span {
+        display: none; 
+    }
+    .search-box {
+        max-width: 180px; 
+    }
+    
+    .dashboard-body .container {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .stats-grid {
+        /* Force two columns on smaller screens */
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* --- Extra Small Screens (Focus on essentials) --- */
+@media (max-width: 480px) {
+    .topbar {
+        padding: 0.6rem var(--spacing-sm);
+    }
+    .search-box {
+        display: none; /* Hide search box on very small phones */
+    }
+    .profile-actions {
+        gap: 10px;
+    }
+    .stats-grid {
+        /* Stack stats cards on very small phones */
+        grid-template-columns: 1fr; 
+    }
+}
