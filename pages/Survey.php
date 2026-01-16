@@ -35,7 +35,7 @@ try {
                 <div class="form-row">
                     <div class="question-group"> <label for="student_name">Full Name</label> <input type="text" id="student_name" name="student_name" placeholder="Enter your Name" required> </div>
                     <div class="question-group"> <label for="student_email">Email</label> <input type="email" id="student_email" name="student_email" placeholder="Gmail" required> </div>
-                </div> <!-- Row 2 -->
+                </div>
                 <div class="form-row">
                     <div class="question-group"> <label for="student_id">Student ID</label> <input type="text" id="student_id" name="student_id" required> </div>
                     <div class="question-group"> <label for="department">Department</label> <select id="department" name="department" required>
@@ -44,7 +44,7 @@ try {
                             <option value="EE">Electrical Engineering</option>
                             <option value="BBA">Business Administration</option>
                         </select> </div>
-                </div> <!-- Row 3 -->
+                </div>
                 <div class="form-row">
                     <div class="question-group"> <label for="semester">Current Semester</label> <select id="semester" name="semester" required>
                             <option value="">Select Semester</option>
@@ -63,7 +63,7 @@ try {
                             <option>MS</option>
                             <option>PhD</option>
                         </select> </div>
-                </div> <!-- Row 4 -->
+                </div>
                 <div class="form-row">
                     <div class="question-group"> <label for="age_group">Age Group</label> <select id="age_group" name="age_group" required>
                             <option value="">Select Age Range</option>
