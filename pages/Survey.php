@@ -106,7 +106,7 @@ try {
                             <option>Poor</option>
                             <option>Very Poor</option>
                         </select> </div>
-                </div> <!-- Row 2 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>How engaging were the lectures?</label> <select name="q_lectures_engaging" required>
                             <option value="">Select</option>
@@ -142,7 +142,7 @@ try {
                             <option>Poor</option>
                             <option>Very Poor</option>
                         </select> </div>
-                </div> <!-- Row 4 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>How was communication from faculty?</label> <select name="q_faculty_comm" required>
                             <option value="">Select</option>
