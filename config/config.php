@@ -1,10 +1,7 @@
 <?php
-// Start session if none exists
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Prevent direct access to this file
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     header("Location: /pages/404.php");
     exit;

@@ -1,17 +1,11 @@
 <?php
 require __DIR__ . "/../config/config.php";
 require __DIR__ . "/../includes/header.php";
-
+require __DIR__ . "/../function/function.php";
+blockAccess();
 $TOTAL_SECTIONS = 5;
-
-// --- 1. Authentication Check ---
-if (!isset($_SESSION['id'])) {
-    header('Location: /auth/login/login.php');
-    exit;
-}
 $user_id = $_SESSION['id'];
 
-// --- 2. Determine Starting Section ---
 $start_section = 1;
 try {
     $stmt = $connection->prepare("SELECT MAX(section_number) AS max_completed FROM survey_progress WHERE user_id = ?");
@@ -30,16 +24,14 @@ try {
 }
 ?>
 
-
-<!-- Main Survey Content Wrapper -->
-<div id="survey-content-wrapper"> <!-- SECTION 1 (User Details) -->
+<div id="survey-content-wrapper"> 
     <section class="survey-section" id="section-1">
         <div class="survey-wrapper">
             <form class="surveyForm" id="surveyForm-1" data-section="1">
                 <div class="survey-header">
                     <h1>Student <span class="text-danger">Experience Feedback</span> </h1>
                     <p class="subtitle">Please fill in your details to begin the survey.</p>
-                </div> <!-- Row 1 -->
+                </div>
                 <div class="form-row">
                     <div class="question-group"> <label for="student_name">Full Name</label> <input type="text" id="student_name" name="student_name" placeholder="Enter your Name" required> </div>
                     <div class="question-group"> <label for="student_email">Email</label> <input type="email" id="student_email" name="student_email" placeholder="Gmail" required> </div>
@@ -89,14 +81,14 @@ try {
                 <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
             </form>
         </div>
-    </section> <!-- SECTION 2 (Teacher Experience) -->
+    </section>
     <section class="survey-section" id="section-2">
         <div class="survey-container">
             <div class="survey-header">
                 <h1>Student <span class="text-danger">Experience Feedback</span></h1>
                 <p class="subtitle">Share Your Experience About Your Teacher.</p>
             </div>
-            <form class="surveyForm" id="surveyForm-2" data-section="2"> <!-- Row 1 -->
+            <form class="surveyForm" id="surveyForm-2" data-section="2">
                 <div class="form-row">
                     <div class="form-group"> <label>How would you rate the teaching quality?</label> <select name="q_teaching_quality" required>
                             <option value="">Select</option>
@@ -132,7 +124,7 @@ try {
                             <option>Poor</option>
                             <option>Very Poor</option>
                         </select> </div>
-                </div> <!-- Row 3 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>How organized was the course content?</label> <select name="q_course_organized" required>
                             <option value="">Select</option>
@@ -168,7 +160,7 @@ try {
                             <option>Poor</option>
                             <option>Very Poor</option>
                         </select> </div>
-                </div> <!-- Row 5 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>How supportive was the administration?</label> <select name="q_admin_support" required>
                             <option value="">Select</option>
@@ -190,14 +182,14 @@ try {
                 <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
             </form>
         </div>
-    </section> <!-- SECTION 3 (Campus Facilities) -->
+    </section>
     <section class="survey-section" id="section-3">
         <div class="survey-container">
             <div class="survey-header">
                 <h1>Student <span class="text-danger">Experience Feedback</span></h1>
                 <p class="subtitle">Share Your Experience About Campus Facilities.</p>
             </div>
-            <form class="surveyForm" id="surveyForm-3" data-section="3"> <!-- Row 1 -->
+            <form class="surveyForm" id="surveyForm-3" data-section="3">
                 <div class="form-row">
                     <div class="form-group"> <label>Classrooms (Cleanliness, equipment, ventilation):</label> <select name="r_classrooms" required>
                             <option value="">Select</option>
@@ -215,7 +207,7 @@ try {
                             <option>Poor</option>
                             <option>Not Applicable</option>
                         </select> </div>
-                </div> <!-- Row 2 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>Wi-Fi & Internet Connectivity:</label> <select name="r_wifi" required>
                             <option value="">Select</option>
@@ -233,7 +225,7 @@ try {
                             <option>Poor</option>
                             <option>Not Applicable</option>
                         </select> </div>
-                </div> <!-- Row 3 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>Transportation Services (Availability and cost):</label> <select name="r_transport" required>
                             <option value="">Select</option>
@@ -251,7 +243,7 @@ try {
                             <option>Poor</option>
                             <option>Not Applicable</option>
                         </select> </div>
-                </div> <!-- Row 4 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>Hostel Facilities (Accommodation, food, maintenance):</label> <select name="r_hostel" required>
                             <option value="">Select</option>
@@ -265,14 +257,14 @@ try {
                 <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
             </form>
         </div>
-    </section> <!-- SECTION 4 (Overall Environment) -->
-    <section class="survey-section" id="section-4">
+    </section>
+     <section class="survey-section" id="section-4">
         <div class="survey-container">
             <div class="survey-header">
                 <h1>Student <span class="text-danger">Experience FeedBack</span></h1>
                 <p class="subtitle">Share Your Experience About Overall Environment.</p>
             </div>
-            <form class="surveyForm" id="surveyForm-4" data-section="4"> <!-- Row 1 -->
+            <form class="surveyForm" id="surveyForm-4" data-section="4">
                 <div class="form-row">
                     <div class="form-group"> <label>Overall feeling of safety and well-being on campus:</label> <select name="e_safety" required>
                             <option value="">Select</option>
@@ -290,7 +282,7 @@ try {
                             <option>Poor</option>
                             <option>Non-existent/Unaware</option>
                         </select> </div>
-                </div> <!-- Row 2 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>Availability and quality of student societies/clubs:</label> <select name="e_societies" required>
                             <option value="">Select</option>
@@ -308,7 +300,7 @@ try {
                             <option>Lacking</option>
                             <option>Not Applicable</option>
                         </select> </div>
-                </div> <!-- Row 3 -->
+                </div>
                 <div class="form-row">
                     <div class="form-group"> <label>Quality of Internship & Job Placement cell:</label> <select name="e_placement" required>
                             <option value="">Select</option>
@@ -328,7 +320,7 @@ try {
                 <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
             </form>
         </div>
-    </section>
+</section>
     <section class="survey-section" id="section-5">
         <div class=" survey-container">
             <div class="survey-header">
@@ -341,7 +333,7 @@ try {
             </form>
         </div>
     </section>
-</div> <!-- End survey-content-wrapper -->
+</div>
 
 
 <div id="success-message">
@@ -350,97 +342,101 @@ try {
         <p>Thank you for completing the Student Experience Feedback survey. <br> Redirecting to homepage</p>
     </div>
 </div>
-
+<div id="toast-container"></div>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const TOTAL_SECTIONS = <?= $TOTAL_SECTIONS; ?>;
-        let currentSectionIndex = <?= $start_section; ?>;
+document.addEventListener('DOMContentLoaded', function () {
+    const TOTAL_SECTIONS = <?= $TOTAL_SECTIONS; ?>;
+    let currentSectionIndex = <?= $start_section; ?>;
 
-        const surveyContentWrapper = document.getElementById('survey-content-wrapper');
-        const successMessage = document.getElementById('success-message');
-        const forms = document.querySelectorAll('.surveyForm');
+    const surveyContentWrapper = document.getElementById('survey-content-wrapper');
+    const successMessage = document.getElementById('success-message');
+    const forms = document.querySelectorAll('.surveyForm');
 
-        function showSection(index) {
-            document.querySelectorAll('.survey-section').forEach(section => {
-                section.style.display = 'none';
-            });
+    function showSection(index) {
+        document.querySelectorAll('.survey-section').forEach(section => {
+            section.style.display = 'none';
+        });
 
-            if (index > TOTAL_SECTIONS) {
-                surveyContentWrapper.style.display = 'none';
-                successMessage.style.display = 'flex';
+        if (index > TOTAL_SECTIONS) {
+            surveyContentWrapper.style.display = 'none';
+            successMessage.style.display = 'flex';
 
-                // ✅ Auto redirect after 2 seconds
-                setTimeout(() => {
-                    window.location.href = "/index.php";
-                }, 2000);
+            showToast('Survey completed successfully ', 'success');
 
+            setTimeout(() => {
+                window.location.href = "/index.php";
+            }, 2000);
+            return;
+        }
+
+        const targetSection = document.getElementById(`section-${index}`);
+        if (targetSection) {
+            targetSection.style.display = 'flex';
+            successMessage.style.display = 'none';
+            surveyContentWrapper.style.display = 'flex';
+        }
+    }
+
+    showSection(currentSectionIndex);
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formElement = this;
+            const sectionNumber = parseInt(formElement.getAttribute('data-section'));
+            const submitButton = formElement.querySelector('.btn-primary');
+
+            if (!formElement.checkValidity()) {
+                showToast('Please fill all required fields', 'error');
                 return;
             }
 
-            const targetSection = document.getElementById(`section-${index}`);
-            if (targetSection) {
-                targetSection.style.display = 'flex';
-                successMessage.style.display = 'none';
-                surveyContentWrapper.style.display = 'flex';
-            }
-        }
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'Processing';
 
-        // Initial load
-        showSection(currentSectionIndex);
+            const formData = new FormData(formElement);
+            formData.append('section_number', sectionNumber);
 
-        // --- AJAX submission handler ---
-        forms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formElement = this;
-                const sectionNumber = parseInt(formElement.getAttribute('data-section'));
-                const submitButton = formElement.querySelector('.btn-primary');
-
-                if (!formElement.checkValidity()) return;
-
-                submitButton.disabled = true;
-                submitButton.innerHTML = 'Processing...';
-
-                const formData = new FormData(formElement);
-                formData.append('section_number', sectionNumber);
-
-                fetch('/pages/survey_handler.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            if (response.status === 401) {
-                                alert("Session expired. Please log in again.");
-                                window.location.reload();
-                                throw new Error('Unauthorized');
-                            }
-                            throw new Error('Server error ' + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            currentSectionIndex = data.next_section;
-                            showSection(currentSectionIndex);
-                        } else {
-                            alert('Submission failed: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('AJAX Error:', error);
-                        alert('A critical error occurred. Please try again.');
-                    })
-                    .finally(() => {
-                        submitButton.disabled = false;
-                        submitButton.innerHTML =
-                            sectionNumber === TOTAL_SECTIONS ?
-                            '<i class="fas fa-check-circle"></i> Submit Survey' :
-                            'Next <i class="fas fa-arrow-right"></i>';
-                    });
+            fetch('/pages/survey_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showToast('Session expired. Please log in again.', 'error');
+                        setTimeout(() => window.location.reload(), 1500);
+                        throw new Error('Unauthorized');
+                    }
+                    throw new Error('Server error ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message || 'Saved successfully', 'success');
+                    currentSectionIndex = data.next_section;
+                    showSection(currentSectionIndex);
+                } else {
+                    showToast(data.message || 'Submission failed', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('AJAX Error:', error);
+                showToast('A critical error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML =
+                    sectionNumber === TOTAL_SECTIONS
+                        ? '<i class="fas fa-check-circle"></i> Submit Survey'
+                        : 'Next <i class="fas fa-arrow-right"></i>';
             });
         });
     });
+});
 </script>
+
 
 <?php require __DIR__ . "/../includes/footer.php"; ?>

@@ -22,20 +22,23 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
         </div>
 
         <div class="input-group">
-          <label for="password">Password</label>
-          <div class="input-field-wrapper">
-            <input type="password" id="password" name="password" placeholder="Enter Password">
-            <i class="fas fa-lock icon"></i>
-            <button type="button" class="toggle-password" id="togglePassword">
-              <i class="far fa-eye-slash"></i>
-            </button>
-          </div>
-          <div class="error-message" id="passwordError"></div>
-        </div>
+  <label for="registration_no">Registration Number</label>
+  <div class="input-field-wrapper">
+    <input 
+      type="password"
+      id="registration_no"
+      name="registration_no"
+      placeholder="Enter Registration Number"
+      required
+    >
+    <i class="fas fa-id-card icon"></i>
+    <button type="button" class="toggle-password">
+      <i class="far fa-eye-slash"></i>
+    </button>
+  </div>
+  <div class="error-message" id="registrationError"></div>
+</div>
 
-        <div class="forgot-password">
-          <a href="/auth/forgotPassword/forgetPassword.php">Forgot Password?</a>
-        </div>
 
         <button type="submit" class="btn btn-primary login-btn">Log In Securely</button>
         <div id="formMessage"></div>
@@ -52,89 +55,66 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
 </section>
 
 <script>
-  // ==========================
-  // GET DOM ELEMENTS
-  // ==========================
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const emailError = document.getElementById("emailError");
-  const passwordError = document.getElementById("passwordError");
-  const generalError = document.getElementById("formMessage");
-  const spinner = document.getElementById("spinner");
-  const form = document.getElementById("loginForm");
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const registrationInput = document.getElementById("registration_no");
+    const emailError = document.getElementById("emailError");
+    const registrationError = document.getElementById("registrationError");
+    const generalError = document.getElementById("formMessage");
+    const spinner = document.getElementById("spinner");
 
-  // ==========================
-  // CLEAR ERRORS ON INPUT
-  // ==========================
-  [emailInput, passwordInput].forEach(input => {
-    input.addEventListener("input", () => {
-      emailError.textContent = "";
-      passwordError.textContent = "";
-      generalError.textContent = "";
+
+    [emailInput, registrationInput].forEach(input => {
+        input.addEventListener("input", () => {
+            emailError.textContent = "";
+            registrationError.textContent = "";
+            generalError.textContent = "";
+        });
     });
-  });
 
-  // ==========================
-  // HANDLE FORM SUBMISSION
-  // ==========================
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    // ==========================
-    // PREPARE FORM DATA
-    // ==========================
-    const formData = new FormData(form);
-    formData.set("email", emailInput.value.trim());
-    formData.set("password", passwordInput.value.trim());
 
-    // ==========================
-    // CLEAR PREVIOUS ERRORS
-    // ==========================
-    emailError.textContent = "";
-    passwordError.textContent = "";
-    generalError.textContent = "";
-
-    // ==========================
-    // SHOW LOADING SPINNER
-    // ==========================
-    spinner.style.display = "block";
-
-    try {
-      // ==========================
-      // SEND LOGIN REQUEST TO SERVER
-      // ==========================
-      const response = await fetch("handler.php", { method: "POST", body: formData });
-      const data = await response.json();
-      spinner.style.display = "none";
-
-      // ==========================
-      // HANDLE SERVER RESPONSE
-      // ==========================
-      if (data.status === "success") {
         emailError.textContent = "";
-        passwordError.textContent = "";
-        generalError.textContent = "Logging In";
-        generalError.style.color="green";
-        setTimeout(() => window.location.href = data.redirect,1500);
-      } else {
-        if (data.field === "email") {
-          emailError.textContent = data.message;
-        } else if (data.field === "password") {
-          passwordError.textContent = data.message;
-        } else {
-          generalError.textContent = data.message;
-          generalError.style.color="red";
-        }
-      }
-    } catch (err) {
-      // ==========================
-      // HANDLE UNEXPECTED ERRORS
-      // ==========================
-      spinner.style.display = "none";
-      generalError.textContent = "An unexpected error occurred. Please try again.";
-    }
-  });
-</script>
+        registrationError.textContent = "";
+        generalError.textContent = "";
 
+        spinner.style.display = "block";
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const formData = new FormData(form);
+        formData.set("email", emailInput.value.trim());
+        formData.set("registration_no", registrationInput.value.trim());
+
+        try {
+            const response = await fetch("handler.php", { method: "POST", body: formData });
+            const data = await response.json();
+
+            spinner.style.display = "none";
+
+            if (data.status === "success") {
+                generalError.style.color = "green";
+                generalError.textContent = data.message;
+                setTimeout(() => {
+                    if (data.redirect) window.location.href = data.redirect;
+                }, 2000);
+            } else {
+                if (data.field === "email") emailError.textContent = data.message;
+                else if (data.field === "registration_no") registrationError.textContent = data.message;
+                else {
+                    generalError.style.color = "red";
+                    generalError.textContent = data.message;
+                }
+            }
+        } catch (err) {
+            spinner.style.display = "none";
+            generalError.style.color = "red";
+            generalError.textContent = "An unexpected error occurred. Please try again.";
+        }
+    });
+});
+</script>
 
 <?php require __DIR__ . "/../../includes/footer.php"; ?>

@@ -1,120 +1,130 @@
 <?php
-// ==========================
-// REQUEST METHOD VALIDATION
-// ==========================
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header("Location: /pages/404.php");
-    exit;
-}
 require_once __DIR__ . "/../../config/config.php";
-require_once __DIR__ ."/../../function/function.php";
+require_once __DIR__ . "/../../function/function.php";
+require_once __DIR__ . "/../../vendor/autoload.php";
+
+blockDirectAccess();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 header("Content-Type: application/json");
+
 // ==========================
 // DEFAULT RESPONSE
 // ==========================
 $response = [
-    "status" => "error",
+    "status"  => "error",
     "message" => "Unexpected error occurred.",
-    "field" => "general"
+    "field"   => "general"
 ];
 
 try {
-    // ==========================
-    // GET & TRIM INPUTS
-    // ==========================
-    $email = trim($_POST["email"] ?? '');
-    $password = $_POST["password"] ?? '';
+    if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+        throw new Exception("Invalid request.");
+    }
 
     // ==========================
-    // VALIDATE EMAIL
+    // GET INPUTS
+    // ==========================
+    $email        = trim($_POST['email'] ?? '');
+    $registration = trim($_POST['registration_no'] ?? '');
+
+    // ==========================
+    // VALIDATIONS
     // ==========================
     if (empty($email)) {
         $field = "email";
-        throw new Exception("Please enter your email.");
+        throw new Exception("Email is required.");
     }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $field = "email";
         throw new Exception("Invalid email format.");
     }
-
-    // ==========================
-    // VALIDATE PASSWORD
-    // ==========================
-    if (empty($password)) {
-        $field = "password";
-        throw new Exception("Please enter your password.");
+    if (empty($registration)) {
+        $field = "registration_no";
+        throw new Exception("Registration number is required.");
     }
 
     // ==========================
-    // FETCH USER FROM DATABASE
+    // VERIFY STUDENT
     // ==========================
-    $stmt = $connection->prepare("SELECT * FROM user WHERE email = :email LIMIT 1");
-    $stmt->execute([':email' => $email]);
-    $user = $stmt->fetch(PDO::FETCH_OBJ);
-
-    if (!$user) {
-        $field = "email";
-        throw new Exception("No account found with that email.");
-    }
-
-    // ==========================
-    // VERIFY PASSWORD
-    // ==========================
-    if (!password_verify($password, $user->password)) {
-        $field = "password";
-        throw new Exception("Incorrect password.");
-    }
-
-    // ==========================
-    // LOGIN SUCCESS: SET SESSION
-    // ==========================
-    session_regenerate_id(true);
-    $_SESSION['id'] = $user->id;
-    $_SESSION['username'] = $user->username;
-    $_SESSION['email'] = $user->email;
-
-    // ==========================
-    // LOG LOGIN ACTIVITY
-    // ==========================
-    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-    $userAgent_full = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
-    $userAgent_details = parse_user_agent_details($userAgent_full);
-    $details_json = json_encode([
-        'device_summary' => $userAgent_details['browser'] . ' on ' . $userAgent_details['os']
-    ]);
-    
-    $stmtLog = $connection->prepare("
-        INSERT INTO ActivityLog (user_id, activity_type, details, ip_address, user_agent) 
-        VALUES (:user_id, 'login', :details, :ip_address, :ua_full)
+    $stmt = $connection->prepare("
+        SELECT id, username, email 
+        FROM user
+        WHERE email = :email
+          AND registration_no = :reg
+          AND status = 'active'
+        LIMIT 1
     ");
-    
-    $stmtLog->execute([
-        ':user_id' => $user->id,
-        ':details' => $details_json, 
-        ':ip_address'  => $ip,
-        ':ua_full'  => $userAgent_full 
+    $stmt->execute([
+        ':email' => $email,
+        ':reg'   => $registration
     ]);
+    $student = $stmt->fetch(PDO::FETCH_OBJ);
+
+    if (!$student) {
+        $field = "general";
+        throw new Exception("Email and registration number do not match.");
+    }
+
+    // ==========================
+    // GENERATE OTP
+    // ==========================
+    $otp = generateOtp(6); // or 16 if you want longer
+    $expiresAt = time() + 300; // 5 minutes from now
+
+    // ==========================
+    // STORE OTP IN SESSION
+    // ==========================
+    $_SESSION['otp_student_id'] = $student->id;
+    $_SESSION['otp_email']      = $student->email;
+    $_SESSION['otp_username']   = $student->username;
+    $_SESSION['otp_code']       = $otp;
+    $_SESSION['otp_expires']    = $expiresAt;
+
+    // ==========================
+    // SEND OTP EMAIL
+    // ==========================
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host       = SMTP_HOST;
+    $mail->SMTPAuth   = true;
+    $mail->Username   = SMTP_USER;
+    $mail->Password   = SMTP_PASSWORD;
+    $mail->SMTPSecure = SMTP_SECURE;
+    $mail->Port       = SMTP_PORT;
+
+    $mail->setFrom(SMTP_USER, 'University Survey');
+    $mail->addAddress($email);
+
+    $mail->isHTML(true);
+    $mail->Subject = "Login Verification Code";
+    $mail->Body = "
+        <h2>Email Verification</h2>
+        <p>Your verification code is:</p>
+        <h1 style='color:#d9534f;'>$otp</h1>
+        <p>This code will expire in 5 minutes.</p>
+    ";
+    $mail->send();
 
     // ==========================
     // SUCCESS RESPONSE
     // ==========================
     $response = [
-        "status" => "success",
-        "message" => "Login successful! Redirecting",
-        "redirect" => "/index.php"
+        "status"   => "success",
+        "message"  => "Verification code sent to your email.",
+        "redirect" => "/auth/login/verifyCode.php"
     ];
+
 } catch (Exception $e) {
-    // ==========================
-    // HANDLE GENERAL EXCEPTIONS
-    // ==========================
-    $response["message"] = $e->getMessage();
-    $response["field"] = $field ?? "general";
+    $response['message'] = $e->getMessage();
+    $response['field']   = $field ?? "general";
+
 } catch (PDOException $e) {
-    // ==========================
-    // HANDLE DATABASE ERRORS
-    // ==========================
-    $response["message"] = "Database error occurred: " . $e->getMessage();
-    $response["field"] = "general";
+    error_log("OTP Login DB Error: " . $e->getMessage());
+    $response['message'] = "Database error occurred.";
 }
+
 echo json_encode($response);
 exit;

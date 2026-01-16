@@ -1,12 +1,21 @@
 <?php
 
-/**
- * Generate a secure OTP or random string.
- * @param int $length Length of the OTP (default 16)
- * @param string|null $characters Characters to use (default lowercase letters + numbers)
- * @return string
- * @throws Exception
- */
+if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
+    header("Location: /pages/404.php");
+    exit;
+}
+function blockDirectAccess() {
+    if($_SERVER['REQUEST_METHOD'] === 'GET' ) {
+        header("Location: /pages/404.php");
+        exit;
+    }
+}
+function blockAccess(){
+    if(empty($_SESSION['id'])) {
+        header("Location: /pages/404.php");
+        exit;
+}
+}
 function generateOtp(int $length = 16, string $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'): string
 {
     $otp = '';
@@ -23,11 +32,7 @@ function generateOtp(int $length = 16, string $characters = 'abcdefghijklmnopqrs
     return $otp;
 };
 
-/**
- * Parse user agent string to extract browser and operating system details.
- * @param string $userAgent The user agent string
- * @return array Associative array with 'browser' and 'os' keys
- */
+
 function parse_user_agent_details($userAgent) {
     if (empty($userAgent) || strtolower($userAgent) === 'unknown') {
         return ['browser' => 'Unknown', 'os' => 'Unknown'];
