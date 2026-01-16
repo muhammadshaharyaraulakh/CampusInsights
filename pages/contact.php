@@ -15,7 +15,6 @@ if (empty($_SESSION['id'])) {
     }
 }
 
-// ---------- AJAX POST handler ----------
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['ajax'])) {
     header('Content-Type: application/json');
 
@@ -32,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['ajax'])) {
 
     if (!empty($errors)) {
         echo json_encode(['status'=>'error','messages'=>$errors]);
-        exit; // STOP execution here so no HTML is output
+        exit; 
     }
 
     $mail = new PHPMailer(true);
@@ -40,14 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['ajax'])) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'muhammadshaharyaraulakh@gmail.com';        // Your Gmail
-        $mail->Password = 'sfyw hous shvc bytw';               // Your App Password
+        $mail->Username = 'muhammadshaharyaraulakh@gmail.com';       
+        $mail->Password = 'sfyw hous shvc bytw';               
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
-        $mail->setFrom('muhammadshaharyaraulakh@gmail.com', 'Mail'); // Must be your Gmail
-        $mail->addReplyTo($email, $name);                             // Visitor's email
-        $mail->addAddress('muhammadshaharyaraulakh@gmail.com');       // Your Gmail
+        $mail->setFrom('muhammadshaharyaraulakh@gmail.com', 'Mail'); 
+        $mail->addReplyTo($email, $name);                            
+        $mail->addAddress('muhammadshaharyaraulakh@gmail.com');     
 
         $mail->isHTML(true);
         $mail->Subject = $subject;

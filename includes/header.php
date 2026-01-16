@@ -7,7 +7,7 @@ require __DIR__ . "/../config/config.php";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Program</title>
+    <title>CampusInsights</title>
     <link rel="stylesheet" href="/assests/css/style.css">
     <link rel="stylesheet" href="/assests/css/responsiveness.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@ require __DIR__ . "/../config/config.php";
 
     <header class="navbar">
         <div class="container navbar-content">
-            <a href="/index.php" class="logo">Survey<span>Program</span></a>
+            <a href="/index.php" class="logo">Campus<span>Insights</span></a>
             <nav>
                 <ul class="nav-links">
                     <li class="nav-item"><a href="/index.php">Home</a></li>

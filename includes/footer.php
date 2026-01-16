@@ -1,7 +1,8 @@
  <footer class="footer" id="contact">
      <div class="container footer-content">
          <div class="footer-col">
-             <a href="/index.php" class="logo">Survey<span>Program</span></a>
+             <a href="/index.php" class="logo">Campus
+<span>Insights</span></a>
              <p>Driving quality improvement through actionable student feedback.</p>
          </div>
 
@@ -35,7 +36,7 @@
          </div>
      </div>
      <div class="footer-bottom">
-         &copy; <span id="Year"></span> SurveyProgram For University Students. All rights reserved.
+         &copy; <span id="Year"></span> CampusInsights For University Students. All rights reserved.
      </div>
  </footer>
 

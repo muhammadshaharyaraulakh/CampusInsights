@@ -35,5 +35,4 @@ CREATE TABLE survey_progress (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     UNIQUE KEY (user_id, section_number) 
 );
-DROP TABLE survey_progress;
-SELECT * FROM survey_progress;
+

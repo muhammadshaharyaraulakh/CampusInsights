@@ -6,7 +6,7 @@ require __DIR__ . "/../includes/header.php";?>
       <div class="about-content">
         <h1>About <span class="text-danger">Us</span></h1>
         <p>
-          Welcome to <a href="/index.php">Survey Program</a> a platform built to gather and analyze insights about the educational environment at universities. 
+          Welcome to <a href="/index.php">CampusInsights</a> a platform built to gather and analyze insights about the educational environment at universities. 
           Our goal is to create a better understanding of how students and educators experience their academic surroundings and help institutions make data-driven improvements.
         </p>
         <p>

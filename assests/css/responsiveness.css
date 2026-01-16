@@ -1,13 +1,11 @@
-/* ==================================== MEDIA QUERIES (RESPONSIVENESS) ==================================== */
 
-/* Tablet / Medium Screens (Max-width: 1199px) */
 @media (max-width: 1199px) {
     .hero h1 {
         font-size: 3.5rem;
     }
 }
 
-/* Tablet / Small Screens (Max-width: 991px) */
+
 @media (max-width: 991px) {
 
     .nav-links,
@@ -38,9 +36,7 @@
     }
 }
 
-/* Tablet to Mobile Transition (Max-width: 768px) */
 @media (max-width: 768px) {
-    /* Global Mobile Screen base adjustments (from 767px) */
     h1 {
         font-size: 2.2rem;
     }
@@ -75,13 +71,11 @@
         margin-right: 0;
     }
     
-    /* Activity Log */
     .log-header {
         flex-direction: column;
         gap: 0.3rem;
     }
 
-    /* Survey Forms (Student/Teacher) */
     .form-row {
         flex-direction: column;
         grid-template-columns: 1fr;
@@ -105,11 +99,9 @@
     }
 
     .success-content {
-        /* Merged from Teacher/Student survey styles */
         padding: 20px 30px;
     }
 
-    /* Contact Section */
     .section-header h2 {
         font-size: 2.2rem;
     }
@@ -127,7 +119,6 @@
         width: 100%;
     }
 
-    /* About Us */
     .about-container {
         text-align: center;
     }
@@ -148,7 +139,6 @@
         width: 470px;
     }
 
-    /* Privacy Policy */
     .privacy-policy {
         padding: var(--spacing-md);
         margin-top: var(--spacing-md);
@@ -168,7 +158,6 @@
     }
 }
 
-/* Small Mobile Devices (Max-width: 575px) */
 @media (max-width: 575px) {
     .container {
         padding: 0 var(--spacing-sm);
@@ -198,9 +187,7 @@
     }
 }
 
-/* Phone Screens (Max-width: 480px) */
 @media (max-width: 480px) {
-    /* Survey & Form Adjustments */
     .survey-section {
         padding: 1rem;
     }
@@ -223,7 +210,6 @@
         font-size: 1.4rem;
     }
 
-    /* Final Suggestions */
     .survey-page[data-step="6"] .navigation-buttons {
         flex-direction: column;
     }
@@ -237,7 +223,6 @@
         font-size: 0.95rem;
     }
 
-    /* Success Message */
     .success-content {
         padding: 5px 5px;
     }
@@ -246,7 +231,6 @@
         font-size: 0.5rem;
     }
 
-    /* About Us */
     .about-image {
         flex: 1 1 50px;
     }
@@ -264,7 +248,6 @@
         height: 350px;
     }
 
-    /* Privacy Policy */
     .privacy-policy {
         padding: var(--spacing-sm);
     }
@@ -294,7 +277,6 @@
 
 }
 
-/* Very Small Phones (Max-width: 400px) */
 @media(max-width: 400px) {
     .error-card h1 {
         font-size: 4rem;
@@ -305,9 +287,7 @@
     }
 }
 
-/* Smallest Screens (Max-width: 320px) */
 @media (max-width: 320px) {
-    /* Final Suggestions */
     .full-width-feedback textarea {
         min-height: 120px;
         font-size: 0.9rem;
@@ -322,7 +302,6 @@
         font-size: 0.85rem;
     }
 
-    /* About Us */
     .about-content h1 {
         font-size: 1.5rem;
     }
@@ -336,7 +315,6 @@
         height: 400px;
     }
 
-    /* Privacy Policy */
     .privacy-policy {
         padding: 1rem;
         border-radius: 8px;
@@ -360,49 +338,40 @@
         padding: 0.65rem 1rem;
     }
 }
-/* ==================================== ACTIVITY LOG RESPONSIVENESS ==================================== */
 
-/* Tablet & Smaller Screens (Max-width: 768px) */
 @media (max-width: 768px) {
-    /* Main container spacing */
     .container-activity {
         margin-top: var(--spacing-md);
         padding-left: var(--spacing-sm);
         padding-right: var(--spacing-sm);
     }
 
-    /* Log Card adjustments */
     .log-card {
         padding: 0.9rem;
     }
 
-    /* Header stacking */
     .log-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.4rem; /* Add space between type and date */
+        gap: 0.4rem;
         margin-bottom: 0.75rem;
     }
 
-    /* Ensure log type remains clear */
     .log-type {
         font-size: 0.9rem;
     }
 
-    /* Reduce font size for detailed info */
     .log-details {
         font-size: 0.85rem;
-        color: var(--color-text); /* Make the main details easier to read */
+        color: var(--color-text);
         margin-bottom: 0.5rem;
     }
     
-    /* Style for the 'Accessed via' details from PHP */
     .log-details i {
         color: var(--color-primary);
         margin-right: 5px;
     }
 
-    /* Raw Data Summary Toggle */
     .log-details details summary {
         font-size: 0.8rem;
         color: var(--color-gray);
@@ -413,7 +382,6 @@
     }
 }
 
-/* Small Mobile Devices (Max-width: 480px) */
 @media (max-width: 480px) {
     .container-activity h1 {
         font-size: 1.8rem;
@@ -433,7 +401,6 @@
         font-size: 0.9rem;
     }
     
-    /* Ensure the type badge still looks good */
     .log-type {
         padding: 0.15rem 0.4rem;
         font-size: 0.75rem;
