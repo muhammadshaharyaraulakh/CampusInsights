@@ -28,9 +28,9 @@ require __DIR__ . "/../config/config.php";
                     <?php if (empty($_SESSION['id'])): ?>
                         <li class="auth-links">
                             <a href="/auth/login/login.php" class="btn btn-secondary">Login</a>
-                            <a href="/auth/signup/signup.php" class="btn btn-primary">Sign Up</a>
                         </li>
                     <?php else: ?>
+                        <a href="/pages/Survey.php" class="btn btn-primary">Survey</a>
                         <li class="nav-item user-menu">
                             <span class="user-icon" title="Account"><i class="fas fa-user-circle"></i></span>
                             <div class="dropdown-content">
@@ -61,17 +61,18 @@ require __DIR__ . "/../config/config.php";
         <ul class="offcanvas-nav-links">
             <li><a href="/index.php"> Home</a></li>
             <li><a href="/pages/about.php"> About</a></li>
-            <li><a href="/pages/Survey.php"> Start Survey</a></li>
             <li><a href="/pages/contact.php"> Contact</a></li>
             <?php if (!empty($_SESSION['id'])): ?>
                 <li><a href="/pages/userActivity.php">My Activity</a></li>
-                <li><a href="/auth/logout.php"> Logout</a></li>
             <?php endif; ?>
         </ul>
-        <?php if (empty($_SESSION['id'])): ?>
+        
             <div class="offcanvas-auth">
+                <?php if (empty($_SESSION['id'])): ?>
                 <a href="/auth/login/login.php" class="btn btn-secondary">Login</a>
-                <a href="/auth/signup/signup.php" class="btn btn-primary">Sign Up</a>
+                <?php endif; ?>
+                <a href="/pages/Survey.php" class="btn btn-secondary">Start Survey</a>
+                <a href="/auth/logout.php" class="btn btn-primary">Logout</a>
             </div>
-        <?php endif; ?>
+        
     </div>

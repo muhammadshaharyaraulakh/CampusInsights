@@ -5,10 +5,10 @@ CREATE TABLE user (
     email VARCHAR(150) NOT NULL UNIQUE,
     registration_no VARCHAR(50) NOT NULL UNIQUE,
     status ENUM('active','inactive') DEFAULT 'active',
+    Batch VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-INSERT INTO user (username, email, registration_no, status) 
-VALUES ('Muhammad Shaharyar', 'muhammadshaharyaraulakh@gmail.com', 'BSCS-M1-22-08', 'active');
+
 
 
 CREATE TABLE ActivityLog (

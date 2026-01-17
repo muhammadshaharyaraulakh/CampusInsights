@@ -69,7 +69,7 @@ $email = $_SESSION['otp_email'];
 
         if (data.status === "success") {
           verifyMsg.style.color = "green";
-          verifyMsg.textContent = "Verification code sent successfully.";
+          verifyMsg.textContent = "Verified Successfully!";
 
           setTimeout(() => {
             if (data.redirect) window.location.href = data.redirect;

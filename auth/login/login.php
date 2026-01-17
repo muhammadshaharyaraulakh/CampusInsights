@@ -28,7 +28,7 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
               type="password"
               id="registration_no"
               name="registration_no"
-              placeholder="Enter Registration Number"
+              placeholder="Registartion BS-_ _-_ _-_ _"
               required>
             <i class="fas fa-id-card icon"></i>
             <button type="button" class="toggle-password">
@@ -42,7 +42,7 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
         <button type="submit" class="btn btn-primary login-btn">Log In Securely</button>
         <div id="formMessage"></div>
         <div id="spinner">
-          <i class="fas fa-spinner fa-spin"></i> Logging In
+          <i class="fas fa-spinner fa-spin"></i> Processing
         </div>
       </form>
     </div>
@@ -51,6 +51,7 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const togglePasswordBtn = document.querySelector(".toggle-password");
     const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
     const registrationInput = document.getElementById("registration_no");
@@ -58,6 +59,20 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
     const registrationError = document.getElementById("registrationError");
     const generalError = document.getElementById("formMessage");
     const spinner = document.getElementById("spinner");
+
+
+    togglePasswordBtn.addEventListener("click", () => {
+      const icon = togglePasswordBtn.querySelector("i");
+      if (registrationInput.type === "password") {
+        registrationInput.type = "text";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      } else {
+        registrationInput.type = "password";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      }
+    });
 
 
     [emailInput, registrationInput].forEach(input => {
@@ -68,15 +83,15 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
       });
     });
 
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
 
       emailError.textContent = "";
       registrationError.textContent = "";
       generalError.textContent = "";
-
       spinner.style.display = "block";
+
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       const formData = new FormData(form);
@@ -95,9 +110,9 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
         if (data.status === "success") {
           generalError.style.color = "green";
           generalError.textContent = data.message;
-          setTimeout(() => {
-            if (data.redirect) window.location.href = data.redirect;
-          }, 2000);
+          if (data.redirect) {
+            setTimeout(() => window.location.href = data.redirect, 2000);
+          }
         } else {
           if (data.field === "email") emailError.textContent = data.message;
           else if (data.field === "registration_no") registrationError.textContent = data.message;
@@ -114,5 +129,6 @@ if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
     });
   });
 </script>
+
 
 <?php require __DIR__ . "/../../includes/footer.php"; ?>
