@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
-    /* Color Palette */
+
     --color-primary: #6c5ce7;
     --color-secondary: #ff7675;
     --color-background: #f5f6fa;
@@ -12,11 +12,8 @@
     --color-gray: #a29bfe;
     --color-input-bg: #e8eaf6;
     --color-danger: #e74c3c;
-    /* Typography */
     --font-family: 'Poppins', sans-serif;
     --font-size-base: 16px;
-
-    /* Spacing & Effects */
     --spacing-lg: 3rem;
     --spacing-md: 1.5rem;
     --spacing-sm: 1rem;

@@ -2,7 +2,7 @@
      <div class="container footer-content">
          <div class="footer-col">
              <a href="/index.php" class="logo">Campus
-<span>Insights</span></a>
+                 <span>Insights</span></a>
              <p>Driving quality improvement through actionable student feedback.</p>
          </div>
 
@@ -41,6 +41,10 @@
  </footer>
 
  <script src="/assests/js/script.js"></script>
+ <script src="/assests/js/login.js"></script>
+ <script src="/assests/js/verification.js"></script>
+
+ <script src="/assests/js/contact.js"></script>
  </body>
 
  </html>

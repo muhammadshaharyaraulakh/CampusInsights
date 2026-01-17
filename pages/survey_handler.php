@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 require __DIR__ . "/../config/config.php";
 require __DIR__ . "/../function/function.php";
+
 blockAccess();
 $MAX_SECTIONS = 5;
 $user_id = $_SESSION['id'];
@@ -42,6 +43,41 @@ try {
             ':uid' => $user_id,
             ':snum' => $current_section,
             ':data' => $json_data
+        ]);
+    }
+
+    $activity_type = null;
+    
+    if ($current_section === 1 && !$exists) {
+        $activity_type = 'survey_start';
+    } 
+    elseif ($current_section === $MAX_SECTIONS) {
+        $activity_type = 'survey_submit';
+    }
+
+    if ($activity_type) {
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        
+        $ua_details = parse_user_agent_details($user_agent); 
+        
+        $log_details = json_encode([
+            'browser' => $ua_details['browser'],
+            'os'      => $ua_details['os'],
+            'section' => $current_section
+        ]);
+
+        $logStmt = $connection->prepare("
+            INSERT INTO ActivityLog (user_id, activity_type, details, ip_address, user_agent) 
+            VALUES (:uid, :atype, :details, :ip, :ua)
+        ");
+        
+        $logStmt->execute([
+            ':uid'     => $user_id,
+            ':atype'   => $activity_type,
+            ':details' => $log_details,
+            ':ip'      => $ip_address,
+            ':ua'      => $user_agent
         ]);
     }
 

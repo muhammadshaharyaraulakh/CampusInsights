@@ -24,27 +24,48 @@ try {
 }
 ?>
 
-<div id="survey-content-wrapper"> 
+<div id="survey-content-wrapper">
     <section class="survey-section" id="section-1">
         <div class="survey-wrapper">
             <form class="surveyForm" id="surveyForm-1" data-section="1">
                 <div class="survey-header">
                     <h1>Student <span class="text-danger">Experience Feedback</span> </h1>
-                    <p class="subtitle">Please fill in your details to begin the survey.</p>
+                    <p class="subtitle">Please confirm your details to begin the survey.</p>
                 </div>
+
                 <div class="form-row">
-                    <div class="question-group"> <label for="student_name">Full Name</label> <input type="text" id="student_name" name="student_name" placeholder="Enter your Name" required> </div>
-                    <div class="question-group"> <label for="student_email">Email</label> <input type="email" id="student_email" name="student_email" placeholder="Gmail" required> </div>
+                    <div class="question-group">
+                        <label for="student_name">Full Name</label>
+                        <input type="text" id="student_name" name="student_name"
+                            value="<?= htmlspecialchars($_SESSION['name'] ?? $_SESSION['username'] ?? '') ?>"
+                            readonly required>
+                    </div>
+                    <div class="question-group">
+                        <label for="student_email">Email</label>
+                        <input type="email" id="student_email" name="student_email"
+                            value="<?= htmlspecialchars($_SESSION['email'] ?? '') ?>"
+                            readonly required>
+                    </div>
                 </div>
+
                 <div class="form-row">
-                    <div class="question-group"> <label for="student_id">Student ID</label> <input type="text" id="student_id" name="student_id" required> </div>
-                    <div class="question-group"> <label for="department">Department</label> <select id="department" name="department" required>
+                    <div class="question-group" style="width: 100%;">
+                        <label for="department">Department</label>
+                        <select id="department" name="department" required>
                             <option value="">Select Department</option>
                             <option value="CS">Computer Science</option>
                             <option value="EE">Electrical Engineering</option>
                             <option value="BBA">Business Administration</option>
+                        </select>
+                    </div>
+                    <div class="question-group"> <label for="attendance">Attendance Type</label> <select id="attendance" name="attendance" required>
+                            <option value="">Select Type</option>
+                            <option>Full-Time</option>
+                            <option>Part-Time</option>
+                            <option>Exchange</option>
                         </select> </div>
                 </div>
+
                 <div class="form-row">
                     <div class="question-group"> <label for="semester">Current Semester</label> <select id="semester" name="semester" required>
                             <option value="">Select Semester</option>
@@ -71,12 +92,7 @@ try {
                             <option value="23-26">23–26</option>
                             <option value=">26">Above 26</option>
                         </select> </div>
-                    <div class="question-group"> <label for="attendance">Attendance Type</label> <select id="attendance" name="attendance" required>
-                            <option value="">Select Type</option>
-                            <option>Full-Time</option>
-                            <option>Part-Time</option>
-                            <option>Exchange</option>
-                        </select> </div>
+
                 </div>
                 <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
             </form>
@@ -258,7 +274,7 @@ try {
             </form>
         </div>
     </section>
-     <section class="survey-section" id="section-4">
+    <section class="survey-section" id="section-4">
         <div class="survey-container">
             <div class="survey-header">
                 <h1>Student <span class="text-danger">Experience FeedBack</span></h1>
@@ -320,11 +336,11 @@ try {
                 <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
             </form>
         </div>
-</section>
+    </section>
     <section class="survey-section" id="section-5">
         <div class=" survey-container">
             <div class="survey-header">
-                <h1>Student  <span class="text-danger">Experience FeedBack</span></h1>
+                <h1>Student <span class="text-danger">Experience FeedBack</span></h1>
                 <p class="subtitle">Your Suggestions will Allow Us to Improve Your Experience.</p>
             </div>
             <form class="surveyForm" id="surveyForm-5" data-section="5">
@@ -344,6 +360,7 @@ try {
 </div>
 <div id="toast-container"></div>
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
     const TOTAL_SECTIONS = <?= $TOTAL_SECTIONS; ?>;
     let currentSectionIndex = <?= $start_section; ?>;
@@ -360,9 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (index > TOTAL_SECTIONS) {
             surveyContentWrapper.style.display = 'none';
             successMessage.style.display = 'flex';
-
-            showToast('Survey completed successfully ', 'success');
-
             setTimeout(() => {
                 window.location.href = "/index.php";
             }, 2000);
@@ -402,41 +416,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        showToast('Session expired. Please log in again.', 'error');
-                        setTimeout(() => window.location.reload(), 1500);
-                        throw new Error('Unauthorized');
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            showToast('Session expired. Please log in again.', 'error');
+                            setTimeout(() => window.location.reload(), 1500);
+                            throw new Error('Unauthorized');
+                        }
+                        throw new Error('Server error ' + response.status);
                     }
-                    throw new Error('Server error ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    showToast(data.message || 'Saved successfully', 'success');
-                    currentSectionIndex = data.next_section;
-                    showSection(currentSectionIndex);
-                } else {
-                    showToast(data.message || 'Submission failed', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('AJAX Error:', error);
-                showToast('A critical error occurred. Please try again.', 'error');
-            })
-            .finally(() => {
-                submitButton.disabled = false;
-                submitButton.innerHTML =
-                    sectionNumber === TOTAL_SECTIONS
-                        ? '<i class="fas fa-check-circle"></i> Submit Survey'
-                        : 'Next <i class="fas fa-arrow-right"></i>';
-            });
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message || 'Saved successfully', 'success');
+                        currentSectionIndex = data.next_section;
+                        showSection(currentSectionIndex);
+                    } else {
+                        showToast(data.message || 'Submission failed', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(' Error:', error);
+                    showToast('A critical error occurred. Please try again.', 'error');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML =
+                        sectionNumber === TOTAL_SECTIONS ?
+                            '<i class="fas fa-check-circle"></i> Submit Survey' :
+                            'Next <i class="fas fa-arrow-right"></i>';
+                });
         });
     });
 });
+
 </script>
-
-
 <?php require __DIR__ . "/../includes/footer.php"; ?>
