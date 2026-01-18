@@ -65,3 +65,32 @@
         toast.remove();
     }, 4000);
 }
+
+    function showForm(type) {
+        const bulkSection = document.getElementById('bulkImportSection');
+        const singleSection = document.getElementById('singleStudentSection');
+        
+        const btnBulk = document.getElementById('btnShowBulk');
+        const btnSingle = document.getElementById('btnShowSingle');
+
+        if (type === 'bulk') {
+            bulkSection.style.display = 'block';
+            singleSection.style.display = 'none';
+            
+            btnBulk.classList.remove('btn-secondary');
+            btnBulk.classList.add('btn-primary');
+            
+            btnSingle.classList.remove('btn-primary');
+            btnSingle.classList.add('btn-secondary');
+
+        } else if (type === 'single') {
+            bulkSection.style.display = 'none';
+            singleSection.style.display = 'block';
+
+            btnSingle.classList.remove('btn-secondary');
+            btnSingle.classList.add('btn-primary');
+            
+            btnBulk.classList.remove('btn-primary');
+            btnBulk.classList.add('btn-secondary');
+        }
+    }

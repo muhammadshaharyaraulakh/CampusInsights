@@ -831,3 +831,17 @@ ul {
         transform: translateX(40px);
     }
 }
+
+
+    .selection-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .selection-container .btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }

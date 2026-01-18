@@ -1,4 +1,12 @@
-<?php require_once __DIR__ . "/../includes/header.php"; ?>
+<?php require_once __DIR__ . "/../includes/header.php"; 
+$stmt = $connection->prepare("
+    SELECT * 
+    FROM batches 
+");
+$stmt->execute();
+
+$batches = $stmt->fetchAll(PDO::FETCH_OBJ);
+?>
 
 <main class="main-content">
     <div class="container">
@@ -27,21 +35,27 @@
                         
                         <div class="form-group">
                             <label>Select Batch</label>
-                            <select class="form-input" name="bulk_batch_id" required>
-                                <option value="" disabled selected>Choose Batch...</option>
-                                <option value="2022">Batch 2022-2026</option>
-                                <option value="2023">Batch 2023-2027</option>
+                            <select class="form-input" name="session" required>
+                                <option value="" disabled selected>Choose Batch</option>
+                               <?php foreach ($batches as $batch): ?>
+                                   <option value="<?= htmlspecialchars($batch->id) ?>">Batch <?= htmlspecialchars($batch->batch_year) ?></option>
+                               <?php endforeach; ?>
                             </select>
+                            <div class="error-message" id="batchSession"></div>
                         </div>
 
                         <div class="form-group">
                             <label>Select Section</label>
-                            <select class="form-input" name="bulk_section" required>
-                                <option value="" disabled selected>Choose Section...</option>
+                            <select class="form-input" name="section" required>
+                                <option value="" disabled selected>Choose Section</option>
                                 <option value="M1">M1</option>
                                 <option value="M2">M2</option>
+                                <option value="M3">M3</option>
                                 <option value="E1">E1</option>
+                                <option value="E2">E2</option>
+                                <option value="E3">E3</option>
                             </select>
+                            <div class="error-message" id="section"></div>
                         </div>
 
                         <div class="form-group">
@@ -49,14 +63,18 @@
                             <div style="position: relative;">
                                 <input type="file" class="form-input" name="student_csv" accept=".csv" required style="padding-top: 0.6rem;">
                             </div>
-                            <small style="color: #666; display: block; margin-top: 5px;">Format: Name, Email, Registration No, Batch</small>
+                            <div class="error-message" id="csvFileError"></div>
                         </div>
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary btn-full-width">
-                                <i class="fas fa-upload"></i> Upload Students
-                            </button>
+                            Add Students
+                            <div id="spinner" style="display:none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -124,60 +142,10 @@
         </div>
 
     </div>
+    </div>
+    <div id="toast-container"></div>
 </main>
 
-<style>
-    /* Styling to center the buttons */
-    .selection-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 30px;
-        flex-wrap: wrap; /* Good for mobile */
-    }
 
-    /* Optional: Make buttons slightly larger for this selection area */
-    .selection-container .btn {
-        padding: 12px 24px;
-        font-size: 1rem;
-    }
-</style>
-
-<script>
-    function showForm(type) {
-        // Get the sections
-        const bulkSection = document.getElementById('bulkImportSection');
-        const singleSection = document.getElementById('singleStudentSection');
-        
-        // Get the buttons (to update active state style if needed, optional)
-        const btnBulk = document.getElementById('btnShowBulk');
-        const btnSingle = document.getElementById('btnShowSingle');
-
-        if (type === 'bulk') {
-            // Show Bulk, Hide Single
-            bulkSection.style.display = 'block';
-            singleSection.style.display = 'none';
-            
-            // Visual feedback on buttons (optional logic)
-            btnBulk.classList.remove('btn-secondary');
-            btnBulk.classList.add('btn-primary');
-            
-            btnSingle.classList.remove('btn-primary');
-            btnSingle.classList.add('btn-secondary');
-
-        } else if (type === 'single') {
-            // Show Single, Hide Bulk
-            bulkSection.style.display = 'none';
-            singleSection.style.display = 'block';
-
-            // Visual feedback on buttons
-            btnSingle.classList.remove('btn-secondary');
-            btnSingle.classList.add('btn-primary');
-            
-            btnBulk.classList.remove('btn-primary');
-            btnBulk.classList.add('btn-secondary');
-        }
-    }
-</script>
 
 <?php require_once __DIR__ . "/../includes/footer.php"; ?>
