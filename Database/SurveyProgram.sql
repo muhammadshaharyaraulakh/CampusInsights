@@ -4,10 +4,16 @@ CREATE TABLE user (
     username VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     registration_no VARCHAR(50) NOT NULL UNIQUE,
+    survey_progress ENUM('pending','active','inactive') NOT NULL DEFAULT 'pending',
     status ENUM('active','inactive') DEFAULT 'active',
-    Batch VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    batch_section_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (batch_section_id) 
+        REFERENCES batch_sections(id)
+        ON DELETE CASCADE
 );
+
 CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
@@ -49,6 +55,8 @@ CREATE TABLE survey_progress (
 CREATE TABLE batches (
     id INT AUTO_INCREMENT PRIMARY KEY,
     batch_year VARCHAR(20) NOT NULL UNIQUE,
+    current_semester INT NOT NULL CHECK (current_semester BETWEEN 1 AND 8),
+    status ENUM('enable','disable') DEFAULT 'enable',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -57,10 +65,10 @@ CREATE TABLE batch_sections (
     batch_id INT NOT NULL,
     section_name VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     FOREIGN KEY (batch_id)
         REFERENCES batches(id)
         ON DELETE CASCADE,
-
     UNIQUE KEY unique_batch_section (batch_id, section_name)
 );
+
+

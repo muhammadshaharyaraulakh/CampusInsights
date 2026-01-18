@@ -480,10 +480,12 @@ ul {
 }
 
 .single-row-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+    display: grid;                  /* Enable CSS Grid */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns of equal width */
+    grid-auto-rows: auto;           /* Rows height auto */
+    gap: 16px;                       /* Space between grid items */
 }
+
 
 .section-btn {
     flex: 1;
@@ -751,5 +753,81 @@ ul {
         gap: 10px;
         justify-content: flex-end; /* Or center if you prefer */
         width: 100%;
+    }
+}
+
+.semester-label {
+    background-color: var(--color-background); /* Halka Neela (Light Blue) */
+    color: var(--color-primary);            /* Gehra Neela Text */
+    padding: 8px 16px;         /* Thodi spacing */
+    border-radius: 20px;       /* Gol kinare (Rounded corners) */
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 600;          /* Thoda bold */
+    font-size: 14px;
+    border: 1px solid var(--color-background); /* Halka border */
+}
+
+/* Number ko thoda aur prominent dikhane ke liye */
+.semester-label span {
+    font-weight: 800;
+    margin-left: 5px;
+}
+/* ==================================== TOAST NOTIFICATION STYLING ==================================== */
+#toast-container {
+    position: fixed;
+    top: 40px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    min-width: 280px;
+    max-width: 360px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.4s ease, fadeOut 0.4s ease 3.6s forwards;
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #28a745, #218838);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+}
+
+.toast.info {
+    background: linear-gradient(135deg, #0d6efd, #084298);
+}
+
+.toast i {
+    font-size: 18px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(40px);
     }
 }

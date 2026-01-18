@@ -1,106 +1,85 @@
-<?php require_once __DIR__ . "/../includes/header.php"; ?>
+<?php
+require_once __DIR__ . "/../includes/header.php";
+
+$batch_id = $_GET['id'] ?? 0;
+if (!$batch_id || !ctype_digit($batch_id)) {
+    header("Location: /pages/404.php");
+    exit;
+}
+$batch_id = (int)$batch_id;
+
+$fetch = $connection->prepare("
+    SELECT 
+        batches.id AS batch_id,
+        batches.batch_year,
+        batches.current_semester,
+        batches.status,
+        batch_sections.id AS section_id,
+        batch_sections.section_name
+    FROM batches 
+    JOIN batch_sections ON batches.id = batch_sections.batch_id 
+    WHERE batches.id = :id
+");
+$fetch->execute([':id' => $batch_id]);
+$batch_details = $fetch->fetchAll(PDO::FETCH_OBJ);
+?>
 
 <main class="main-content">
     <div class="container">
-
         <div class="page-header">
-            <a href="manage_batches.php" class="back-link"><i class="fas fa-arrow-left"></i> Back to Batches</a>
-            <h1>Batch 2022-2026</h1>
+            <a href="/admin/Management/batch.php" class="back-link"><i class="fas fa-arrow-left"></i> Back to Batches</a>
+            <h1>Batch <?= htmlspecialchars($batch_details[0]->batch_year) ?></h1>
             <p>Select a Section to view students</p>
+            <p class="semester-label">
+                Current Semester: <span><?= htmlspecialchars($batch_details[0]->current_semester) ?></span>
+            </p>
         </div>
 
         <div class="dashboard-card">
             <div class="card-body">
                 <div class="single-row-grid">
-                    <a href="students.php?section=M1" class="section-btn">M1</a>
-                    <a href="students.php?section=M2" class="section-btn">M2</a>
-                    <a href="students.php?section=M3" class="section-btn">M3</a>
-                    <a href="students.php?section=E1" class="section-btn">E1</a>
-                    <a href="students.php?section=E2" class="section-btn">E2</a>
-                    <a href="students.php?section=E3" class="section-btn">E3</a>
+                    <?php foreach ($batch_details as $detail): ?>
+                        <a
+                            href="#"
+                            class="section-btn js-section-btn"
+                            data-section-id="<?= htmlspecialchars($detail->section_id) ?>"
+                            data-batch-id="<?= htmlspecialchars($detail->batch_id) ?>">
+                            <?= htmlspecialchars($detail->section_name) ?>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
 
-        <!-- UPDATED SECTION AND TABLE CLASS NAMES -->
-        <section class="students-dashboard-section">
-
+        <section class="students-dashboard-section" style="display: none;">
             <div class="header-content">
                 <div>
-                    <h1>Section M1 Students</h1>
-                    <p>Batch 2022-2026</p>
+                    <h1 class="section-title"></h1>
+                    <p class="batch-info"></p>
                 </div>
-
                 <div class="stats-mini">
-                    <span class="tag tag-total"><i class="fas fa-users"></i> 50 Total</span>
-                    <span class="tag tag-pending"><i class="fas fa-clock"></i> 18 Pending</span>
+                    <span class="tag tag-total"><i class="fas fa-users"></i> <span class="total-count">0</span> Total</span>
+                    <span class="tag tag-pending"><i class="fas fa-clock"></i> <span class="pending-count">0</span> Pending</span>
                 </div>
             </div>
 
-                <table class="students-data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>RollNumber</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div>
-                                        <span style="display:block; font-weight:600;">Ali Khan</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="user-info">
-                                    <div>
-                                        <span style="display:block; font-weight:600;">BSCS-M1-22-08</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td><span class="badge badge-success">Completed</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-icon edit"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon delete"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div>
-                                        <span style="display:block; font-weight:600;">Ali Khan</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="user-info">
-                                    <div>
-                                        <span style="display:block; font-weight:600;">BSCS-M1-22-08</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-icon edit "><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon delete"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
+            <table class="students-data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>RollNumber</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="students-tbody"></tbody>
+            </table>
         </section>
-
     </div>
 </main>
+
+<div id="toast-container"></div>
+
+
 
 <?php require_once __DIR__ . "/../includes/footer.php"; ?>

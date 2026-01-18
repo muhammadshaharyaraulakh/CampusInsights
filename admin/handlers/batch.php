@@ -11,11 +11,9 @@ $response = [
 
 try {
 
-
     $batch_year = trim($_POST['batch_year'] ?? '');
     $sections   = $_POST['sections'] ?? [];
 
-    // Batch Year validation
     if (empty($batch_year)) {
         $field = "batch_year";
         throw new Exception("Batch year is required.");
@@ -27,18 +25,17 @@ try {
     }
 
     [$start, $end] = explode('-', $batch_year);
-    if ((int)$start >= (int)$end) {
+
+    if (((int)$end - (int)$start) !== 4) {
         $field = "batch_year";
-        throw new Exception("Start year must be less than end year.");
+        throw new Exception("Batch duration must be exactly 4 years.");
     }
 
-    // Sections validation
     if (empty($sections) || !is_array($sections)) {
         $field = "sections";
         throw new Exception("Please select at least one section.");
     }
 
-    // Duplicate batch check
     $stmt = $connection->prepare(
         "SELECT id FROM batches WHERE batch_year = :year LIMIT 1"
     );
@@ -49,15 +46,14 @@ try {
         throw new Exception("This batch already exists.");
     }
 
-    // Insert batch
     $stmt = $connection->prepare(
-        "INSERT INTO batches (batch_year) VALUES (:year)"
+        "INSERT INTO batches (batch_year, current_semester)
+         VALUES (:year, 1)"
     );
     $stmt->execute([':year' => $batch_year]);
 
     $batchId = $connection->lastInsertId();
 
-    // Insert sections
     $stmtSec = $connection->prepare(
         "INSERT INTO batch_sections (batch_id, section_name)
          VALUES (:bid, :section)"

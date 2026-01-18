@@ -53,12 +53,13 @@
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-full-width">
-                            Create
+                            Create Batch
+                            <div id="spinner" style="display:none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
                         </button>
-                        <div id="formMessage"></div>
-                        <div id="spinner" style="display:none;">
-                            <i class="fas fa-spinner fa-spin"></i> Creating
-                        </div>
+
+
                     </div>
                 </form>
 
@@ -67,6 +68,7 @@
 
 
     </div>
+    <div id="toast-container"></div>
 </main>
 
 <?php require_once __DIR__ . "/../includes/footer.php"; ?>

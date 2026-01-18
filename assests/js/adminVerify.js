@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data.status === "success") {
                 verifyMsg.style.color = "green";
-                verifyMsg.textContent = "Verified! Redirecting...";
+                verifyMsg.textContent = "Verified! Redirecting";
 
                 setTimeout(() => {
                     if (data.redirect) window.location.href = data.redirect;

@@ -1,12 +1,11 @@
  <?php require_once __DIR__ . "/../includes/header.php";
 $stmt = $connection->prepare("
-    SELECT batch_year 
+    SELECT * 
     FROM batches 
-    ORDER BY batch_year DESC
 ");
 $stmt->execute();
 
-$batches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$batches = $stmt->fetchAll(PDO::FETCH_OBJ);
 ?>
 
 <main class="main-content">
@@ -15,13 +14,14 @@ $batches = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="page-header">
             <h1><i class="fas fa-university"></i> Manage Batches</h1>
             <p>Computer Science Department</p>
+            <p>Current Smester</p>
         </div>
 
         <h2 class="section-title">Available Batches</h2>
         <div class="batch-grid">
             <?php if ($batches): ?>
                 <?php foreach ($batches as $batch): ?>
-                    <a href="sections.php?batch=<?= htmlspecialchars($batch['batch_year']) ?>"
+                    <a href="/admin/Management/section.php?id=<?= htmlspecialchars($batch->id) ?>"
                         class="batch-card">
 
                         <div class="batch-icon">
@@ -29,7 +29,7 @@ $batches = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
 
                         <div class="batch-info">
-                            <h3>Batch <?= htmlspecialchars($batch['batch_year']) ?></h3>
+                            <h3>Batch <?= htmlspecialchars($batch->batch_year) ?></h3>
                             <p>Computer Science</p>
                         </div>
 

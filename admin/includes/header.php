@@ -40,22 +40,37 @@ require_once __DIR__ . "/../../config/config.php";
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/batches/manage_batches.php">
-                        Manage Batches
+                    <a href="/admin/analytics.php">
+                        Analytics Report
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/import/form.php">
-                        Import Students
+                    <a href="/admin/Management/addbatch.php">
+                        Add Batchs
                     </a>
                 </li>
-                <li class="separator"></li>
+                <li>
+                    <a href="/admin/Management/batch.php">
+                        All Batchs
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/Management/updatebatch.php">
+                        Update Batch
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/Management/addStudent.php">
+                        Add Students
+                    </a>
+                </li>
+            
             </ul>
         </nav>
 
         <div class="sidebar-footer">
-            <a href="/admin/logout.php" class="btn btn-logout">
-                <i class="fas fa-sign-out-alt"></i> Logout
+            <a href="/auth/logout.php" class="btn btn-logout">
+                 Logout
             </a>
         </div>
     </aside>

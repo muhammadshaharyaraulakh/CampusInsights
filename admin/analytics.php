@@ -6,7 +6,7 @@
     
     <div class="analytics-header">
         <div>
-            <h1><i class="fas fa-chart-pie"></i> Survey Analytics Report</h1>
+            <h1> Survey Analytics Report</h1>
             <p>Real-time analysis of student feedback.</p>
         </div>
         <div class="date-filter">
@@ -136,6 +136,7 @@
         margin: 0 auto;
         padding: 20px;
         background-color: #f8fafc;
+        margin-top: 3rem;
     }
 
     /* Header */
