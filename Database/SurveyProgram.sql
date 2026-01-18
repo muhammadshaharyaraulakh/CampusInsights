@@ -46,6 +46,21 @@ CREATE TABLE survey_progress (
     UNIQUE KEY (user_id, section_number) 
 );
 
-DROP TABLE IF EXISTS survey_progress;
-DROP TABLE IF EXISTS ActivityLog;
-DROP TABLE IF EXISTS user;
+CREATE TABLE batches (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    batch_year VARCHAR(20) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE batch_sections (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    batch_id INT NOT NULL,
+    section_name VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (batch_id)
+        REFERENCES batches(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY unique_batch_section (batch_id, section_name)
+);
