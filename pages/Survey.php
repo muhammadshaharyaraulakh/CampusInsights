@@ -102,7 +102,7 @@ try {
         <div class="survey-container">
             <div class="survey-header">
                 <h1>Student <span class="text-danger">Experience Feedback</span></h1>
-                <p class="subtitle">Share Your Experience About Your Teacher.</p>
+                <p class="subtitle">Share Your Experience About Academics & Faculty.</p>
             </div>
             <form class="surveyForm" id="surveyForm-2" data-section="2">
                 <div class="form-row">

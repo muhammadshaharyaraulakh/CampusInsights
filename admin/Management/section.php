@@ -33,7 +33,6 @@
 
                 <div class="stats-mini">
                     <span class="tag tag-total"><i class="fas fa-users"></i> 50 Total</span>
-                    <span class="tag tag-done"><i class="fas fa-check"></i> 32 Done</span>
                     <span class="tag tag-pending"><i class="fas fa-clock"></i> 18 Pending</span>
                 </div>
             </div>
