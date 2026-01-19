@@ -89,51 +89,72 @@ $batches = $stmt->fetchAll(PDO::FETCH_OBJ);
                     <form class="admin-form-row" id="singleStudentForm" method="POST">
 
                         <div class="form-group">
-                            <label>Batch</label>
-                            <select class="form-input" name="batch_id" required>
-                                <option value="" disabled selected>Select Batch...</option>
-                                <option value="2022">Batch 2022-2026</option>
-                                <option value="2023">Batch 2023-2027</option>
-                            </select>
-                        </div>
+    <label>Batch</label>
+    <select class="form-input" name="batch_id" required>
+        <option value="" disabled selected>Select Batch</option>
+        <?php foreach ($batches as $batch): ?>
+            <option value="<?= $batch->id ?>">Batch <?= $batch->batch_year ?></option>
+        <?php endforeach; ?>
+    </select>
+    <div class="error-message" id="error-batch_id"></div>
+</div>
 
-                        <div class="form-group">
-                            <label>Section</label>
-                            <select class="form-input" name="section" required>
-                                <option value="" disabled selected>Select Section...</option>
-                                <option value="M1">M1</option>
-                                <option value="M2">M2</option>
-                            </select>
-                        </div>
 
-                        <div class="form-group">
-                            <label>Section</label>
-                            <select class="form-input" name="section" required>
-                                <option value="" disabled selected>Select Smester</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                            </select>
-                        </div>
+<div class="form-group">
+    <label>Section</label>
+    <select class="form-input" name="section" required>
+        <option value="" disabled selected>Select Section</option>
+        <option value="M1">M1</option>
+        <option value="M2">M2</option>
+        <option value="M3">M3</option>
+        <option value="E1">E1</option>
+        <option value="E2">E2</option>
+        <option value="E3">E3</option>
+    </select>
+    <div class="error-message" id="error-section"></div>
+</div>
 
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" class="form-input" name="full_name" placeholder="e.g. Ali Khan" required>
-                        </div>
 
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" class="form-input" name="email" placeholder="e.g. ali@example.com" required>
-                        </div>
+<div class="form-group">
+    <label>Semester</label>
+    <select class="form-input" name="semester" required>
+        <option value="" disabled selected>Select Semester</option>
+        <?php for ($i = 1; $i <= 8; $i++): ?>
+            <option value="<?= $i ?>">Semester <?= $i ?></option>
+        <?php endfor; ?>
+    </select>
+    <div class="error-message" id="error-semester"></div>
+</div>
 
-                        <div class="form-group">
-                            <label>Registration No (Roll No)</label>
-                            <input type="text" class="form-input" name="reg_no" placeholder="e.g. BS-CS-22-01" required>
-                        </div>
+
+<div class="form-group">
+    <label>Full Name</label>
+    <input type="text" class="form-input" name="full_name">
+    <div class="error-message" id="error-full_name"></div>
+</div>
+
+
+<div class="form-group">
+    <label>Email</label>
+    <input type="email" class="form-input" name="email">
+    <div class="error-message" id="error-email"></div>
+</div>
+
+
+<div class="form-group">
+    <label>Registration No</label>
+    <input type="text" class="form-input" name="reg_no">
+    <div class="error-message" id="error-reg_no"></div>
+</div>
+
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary btn-full-width">
-                                <i class="fas fa-plus-circle"></i> Add Student
-                            </button>
+                            Add Student
+                            <div id="spinner" style="display:none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
                         </div>
 
                     </form>

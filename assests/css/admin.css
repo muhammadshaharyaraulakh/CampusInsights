@@ -510,7 +510,7 @@ ul {
 /* =================== STUDENTS SECTION =================== */
 .students-dashboard-section {
     width: 100%;
-    margin-top: 3rem;
+    margin-top: 6rem;
 }
 
 .header-content {
@@ -845,3 +845,9 @@ ul {
         padding: 12px 24px;
         font-size: 1rem;
     }
+    .download-wrapper {
+    text-align: center;
+    margin-top: 20px;
+}
+
+

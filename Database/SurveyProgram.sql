@@ -13,6 +13,7 @@ CREATE TABLE user (
         REFERENCES batch_sections(id)
         ON DELETE CASCADE
 );
+SELECT * FROM user;
 
 CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -21,9 +21,7 @@ try {
         throw new Exception("Please select a batch.");
     }
 
-    $stmt = $connection->prepare(
-        "SELECT * FROM batches WHERE id = $batch_id LIMIT 1"
-    );
+    $stmt = $connection->prepare("SELECT * FROM batches WHERE id = $batch_id LIMIT 1");
     $stmt->execute();
     $batch = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -46,11 +44,7 @@ try {
             throw new Exception("Batch duration must be exactly 4 years.");
         }
 
-        $stmt = $connection->prepare(
-            "SELECT id FROM batches 
-             WHERE batch_year = '$batch_year' AND id != $batch_id 
-             LIMIT 1"
-        );
+        $stmt = $connection->prepare("SELECT id FROM batches WHERE batch_year = '$batch_year' AND id != $batch_id LIMIT 1");
         $stmt->execute();
 
         if ($stmt->fetch()) {
@@ -85,15 +79,28 @@ try {
         throw new Exception("No changes detected.");
     }
 
-    $sql = "
-        UPDATE batches 
-        SET " . implode(', ', $updates) . "
-        WHERE id = $batch_id
-        LIMIT 1
-    ";
+    $sql = "UPDATE batches SET " . implode(', ', $updates) . " WHERE id = $batch_id LIMIT 1";
 
     $stmt = $connection->prepare($sql);
     $stmt->execute();
+
+    if ($status === 'disable') {
+        $stmt = $connection->prepare("
+            UPDATE user u
+            JOIN batch_sections bs ON u.batch_section_id = bs.id
+            SET u.status = 'inactive'
+            WHERE bs.batch_id = :batch_id
+        ");
+        $stmt->execute([':batch_id' => $batch_id]);
+    } elseif ($status === 'enable') {
+        $stmt = $connection->prepare("
+            UPDATE user u
+            JOIN batch_sections bs ON u.batch_section_id = bs.id
+            SET u.status = 'active'
+            WHERE bs.batch_id = :batch_id
+        ");
+        $stmt->execute([':batch_id' => $batch_id]);
+    }
 
     $response = [
         "status"  => "success",

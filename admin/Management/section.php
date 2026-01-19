@@ -74,7 +74,14 @@ $batch_details = $fetch->fetchAll(PDO::FETCH_OBJ);
                 </thead>
                 <tbody class="students-tbody"></tbody>
             </table>
+            <div class="download-wrapper">
+    <button id="downloadPendingBtn" class="btn btn-primary">
+         Download Pending Students CSV
+    </button>
+</div>
+
         </section>
+        
     </div>
 </main>
 
