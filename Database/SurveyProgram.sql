@@ -4,7 +4,7 @@ CREATE TABLE user (
     username VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     registration_no VARCHAR(50) NOT NULL UNIQUE,
-    survey_progress ENUM('pending','active','inactive') NOT NULL DEFAULT 'pending',
+    survey_progress ENUM('pending','completed') NOT NULL DEFAULT 'pending',
     status ENUM('active','inactive') DEFAULT 'active',
     batch_section_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -13,7 +13,7 @@ CREATE TABLE user (
         REFERENCES batch_sections(id)
         ON DELETE CASCADE
 );
-SELECT * FROM user;
+
 
 CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,25 +42,29 @@ CREATE TABLE ActivityLog (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
+
+
+
+
 CREATE TABLE survey_progress (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    section_number INT NOT NULL, 
-    section_data JSON NOT NULL, 
-    submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    UNIQUE KEY (user_id, section_number) 
+    user_id INT PRIMARY KEY,
+    section_1 JSON DEFAULT NULL,
+    section_2 JSON DEFAULT NULL,
+    section_3 JSON DEFAULT NULL,
+    section_4 JSON DEFAULT NULL,
+    section_5 JSON DEFAULT NULL,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
+SELECT * FROM survey_progress;
 CREATE TABLE batches (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    batch_year VARCHAR(20) NOT NULL UNIQUE,
-    current_semester INT NOT NULL CHECK (current_semester BETWEEN 1 AND 8),
-    status ENUM('enable','disable') DEFAULT 'enable',
+    batch_year VARCHAR(20) NOT NULL UNIQUE, -- e.g., '2022-2026'
+    current_semester INT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TABLE batch_sections (
     id INT AUTO_INCREMENT PRIMARY KEY,
     batch_id INT NOT NULL,

@@ -35,33 +35,6 @@ require_once __DIR__."/includes/header.php";
             </div>
         </div>
 
-        <div class="action-buttons-row">
-            
-            <button class="action-card btn-open" onclick="updateSurveyStatus('open')">
-                <div class="icon-box"><i class="fas fa-door-open"></i></div>
-                <div class="text-box">
-                    <h4>Open Survey Portal</h4>
-                    <span>Allow students to submit</span>
-                </div>
-            </button>
-
-            <button class="action-card btn-close" onclick="updateSurveyStatus('close')">
-                <div class="icon-box"><i class="fas fa-door-closed"></i></div>
-                <div class="text-box">
-                    <h4>Close Survey Portal</h4>
-                    <span>Stop new submissions</span>
-                </div>
-            </button>
-
-            <a href="analytics.php" class="action-card btn-analytics">
-                <div class="icon-box"><i class="fas fa-chart-pie"></i></div>
-                <div class="text-box">
-                    <h4>View Analytics</h4>
-                    <span>See detailed reports</span>
-                </div>
-            </a>
-
-        </div>
 
     </div>
 
@@ -77,7 +50,7 @@ require_once __DIR__."/includes/header.php";
         align-items: center; /* Vertically center */
         background-color: #f3f4f6;
         padding: 20px;
-        margin-top: 6rem;
+        margin-top: 2rem;
     }
 
     .dashboard-center-container {
@@ -236,71 +209,6 @@ require_once __DIR__."/includes/header.php";
         background: #4338ca;
     }
 
-    /* --- ACTION BUTTONS ROW --- */
-    .action-buttons-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr; /* 3 Columns */
-        gap: 15px;
-    }
-
-    .action-card {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 15px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: transform 0.2s, box-shadow 0.2s;
-        text-align: left;
-        background: white;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .action-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .action-card .icon-box {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-    }
-
-    .action-card h4 {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #1e293b;
-    }
-
-    .action-card span {
-        display: block;
-        font-size: 0.75rem;
-        color: #64748b;
-        margin-top: 2px;
-    }
-
-    /* Button Specific Colors */
-    /* Open (Green) */
-    .btn-open .icon-box { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-    .btn-open:hover { border: 1px solid #10b981; }
-
-    /* Close (Red) */
-    .btn-close .icon-box { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-    .btn-close:hover { border: 1px solid #ef4444; }
-
-    /* Analytics (Blue) */
-    .btn-analytics .icon-box { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    .btn-analytics:hover { border: 1px solid #3b82f6; }
-
     /* Typing Animation */
     .typing-indicator span {
         display: inline-block;
@@ -317,9 +225,6 @@ require_once __DIR__."/includes/header.php";
 
     /* Responsive for Mobile */
     @media (max-width: 600px) {
-        .action-buttons-row {
-            grid-template-columns: 1fr; /* Stack vertically on phone */
-        }
         .ai-widget-card {
             height: 400px;
         }
@@ -327,7 +232,7 @@ require_once __DIR__."/includes/header.php";
 </style>
 
 <script>
-    // 1. Ask AI Logic
+    // 1. Ask AI Logic (Real Database Connection)
     function askAi() {
         const inputField = document.getElementById('aiQuestionInput');
         const responseArea = document.getElementById('aiResponseArea');
@@ -335,15 +240,17 @@ require_once __DIR__."/includes/header.php";
 
         if (question === "") return;
 
-        // User Bubble
+        // --- Step 1: Show User Question ---
         const userBubble = document.createElement('div');
         userBubble.className = 'ai-message user';
         userBubble.textContent = question;
         responseArea.appendChild(userBubble);
+        
+        // Clear input and scroll down
         inputField.value = "";
         responseArea.scrollTop = responseArea.scrollHeight;
 
-        // Loading
+        // --- Step 2: Show Loading Bubble ---
         const loadingBubble = document.createElement('div');
         loadingBubble.className = 'ai-message bot';
         loadingBubble.id = 'aiLoading';
@@ -351,24 +258,55 @@ require_once __DIR__."/includes/header.php";
         responseArea.appendChild(loadingBubble);
         responseArea.scrollTop = responseArea.scrollHeight;
 
-        // Simulate AI
-        setTimeout(() => {
-            document.getElementById('aiLoading').remove();
+        // --- Step 3: Send Request to Server ---
+        // Make sure the path matches where you saved the PHP file. 
+        // If it's in 'pages', use '/pages/ai_handler.php'. 
+        // If it's in 'admin/handlers', use '/admin/handlers/aiHandling.php'.
+        fetch('/admin/handlers/aiHandling.php', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ question: question })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Remove Loading Animation
+            const loader = document.getElementById('aiLoading');
+            if(loader) loader.remove();
+
+            // Create Bot Response Bubble
             const botBubble = document.createElement('div');
             botBubble.className = 'ai-message bot';
             
-            // Basic Fake Logic for Demo
-            if(question.toLowerCase().includes("clear")) {
-                botBubble.innerHTML = "To clear chat, click the Trash icon at the top right.";
-            } else if(question.toLowerCase().includes("open")) {
-                botBubble.textContent = "You can open the survey using the green button below.";
-            } else {
-                botBubble.innerHTML = "That's an interesting point. Based on the <strong>450 responses</strong>, the trend seems positive regarding this topic.";
-            }
+            // --- Formatting Logic ---
+            // 1. Convert newlines (\n) to HTML breaks (<br>)
+            let formattedReply = data.reply.replace(/\n/g, "<br>");
+            
+            // 2. Convert Markdown Bold (**text**) to HTML Bold (<strong>text</strong>)
+            formattedReply = formattedReply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            botBubble.innerHTML = formattedReply;
             
             responseArea.appendChild(botBubble);
             responseArea.scrollTop = responseArea.scrollHeight;
-        }, 1200);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const loader = document.getElementById('aiLoading');
+            if(loader) loader.remove();
+
+            const botBubble = document.createElement('div');
+            botBubble.className = 'ai-message bot';
+            botBubble.innerHTML = "<span style='color: #dc3545;'>Error: Could not connect to AI server. Please check your internet or API key.</span>";
+            responseArea.appendChild(botBubble);
+            responseArea.scrollTop = responseArea.scrollHeight;
+        });
     }
 
     // Enter Key Support
@@ -382,15 +320,14 @@ require_once __DIR__."/includes/header.php";
         responseArea.innerHTML = `
             <div class="ai-message bot">
                 <p>Chat history cleared.</p>
-                <p>I am ready for your next question.</p>
+                <p>I am ready to analyze the latest survey data.</p>
             </div>
         `;
     }
 
-    // 3. Survey Status Logic (Placeholder)
+    // 3. Survey Status Logic (Kept as requested)
     function updateSurveyStatus(status) {
         if(status === 'open') {
-            // Here you will eventually add AJAX to update DB
             alert("Survey Portal is now OPEN for students.");
         } else {
             if(confirm("Are you sure you want to CLOSE the survey? Students won't be able to submit.")) {

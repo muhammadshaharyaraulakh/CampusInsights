@@ -6,6 +6,28 @@ blockAccess();
 $TOTAL_SECTIONS = 5;
 $user_id = $_SESSION['id'];
 
+
+$TOTAL_SECTIONS = 5;
+$user_id = $_SESSION['id'];
+
+// 1. Check Status First
+// Sirf 'survey_progress' column select karein (Optimization)
+$statusStmt = $connection->prepare("SELECT survey_progress FROM user WHERE id = :id LIMIT 1");
+$statusStmt->execute([':id' => $user_id]);
+
+// Force FETCH_ASSOC taake array mile
+$userStatus = $statusStmt->fetch(PDO::FETCH_ASSOC); 
+
+// Check if status is completed
+if ($userStatus && $userStatus['survey_progress'] === 'completed') {
+    // Note: 'Location:' ke baad space mat dein
+    header("Location: /index.php");
+    exit;
+}
+
+// .
+
+// 2. Calculate Start Section
 $start_section = 1;
 try {
     $stmt = $connection->prepare("SELECT MAX(section_number) AS max_completed FROM survey_progress WHERE user_id = ?");
@@ -19,343 +41,602 @@ try {
             : $max_completed + 1;
     }
 } catch (PDOException $e) {
-    error_log("Progress lookup failed for user $user_id: " . $e->getMessage());
+    error_log("Progress lookup failed: " . $e->getMessage());
     $start_section = 1;
 }
 ?>
+?>
 
 <div id="survey-content-wrapper">
-    <section class="survey-section" id="section-1">
-        <div class="survey-wrapper">
-            <form class="surveyForm" id="surveyForm-1" data-section="1">
-                <div class="survey-header">
-                    <h1>Student <span class="text-danger">Experience Feedback</span> </h1>
-                    <p class="subtitle">Please confirm your details to begin the survey.</p>
-                </div>
-
-                <div class="form-row">
-                    <div class="question-group">
-                        <label for="student_name">Full Name</label>
-                        <input type="text" id="student_name" name="student_name"
-                            value="<?= htmlspecialchars($_SESSION['name'] ?? $_SESSION['username'] ?? '') ?>"
-                            readonly required>
-                    </div>
-                    <div class="question-group">
-                        <label for="student_email">Email</label>
-                        <input type="email" id="student_email" name="student_email"
-                            value="<?= htmlspecialchars($_SESSION['email'] ?? '') ?>"
-                            readonly required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="question-group" style="width: 100%;">
-                        <label for="department">Department</label>
-                        <select id="department" name="department" required>
-                            <option value="">Select Department</option>
-                            <option value="CS">Computer Science</option>
-                            <option value="EE">Electrical Engineering</option>
-                            <option value="BBA">Business Administration</option>
-                        </select>
-                    </div>
-                    <div class="question-group"> <label for="attendance">Attendance Type</label> <select id="attendance" name="attendance" required>
-                            <option value="">Select Type</option>
-                            <option>Full-Time</option>
-                            <option>Part-Time</option>
-                            <option>Exchange</option>
-                        </select> </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="question-group"> <label for="semester">Current Semester</label> <select id="semester" name="semester" required>
-                            <option value="">Select Semester</option>
-                            <option>1st</option>
-                            <option>2nd</option>
-                            <option>3rd</option>
-                            <option>4th</option>
-                            <option>5th</option>
-                            <option>6th</option>
-                            <option>7th</option>
-                            <option>8th</option>
-                        </select> </div>
-                    <div class="question-group"> <label for="degree">Degree Program</label> <select id="degree" name="degree" required>
-                            <option value="">Select Program</option>
-                            <option>BS</option>
-                            <option>MS</option>
-                            <option>PhD</option>
-                        </select> </div>
-                </div>
-                <div class="form-row">
-                    <div class="question-group"> <label for="age_group">Age Group</label> <select id="age_group" name="age_group" required>
-                            <option value="">Select Age Range</option>
-                            <option value="18-22">18–22</option>
-                            <option value="23-26">23–26</option>
-                            <option value=">26">Above 26</option>
-                        </select> </div>
-
-                </div>
-                <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
-            </form>
+<section class="survey-section" id="section-1">
+    <div class="survey-container">
+        <div class="survey-header">
+            <h1>Faculty <span class="text-danger">Evaluation</span></h1>
+            <p class="subtitle">Please provide feedback specifically regarding all the course instructors.</p>
         </div>
-    </section>
-    <section class="survey-section" id="section-2">
-        <div class="survey-container">
-            <div class="survey-header">
-                <h1>Student <span class="text-danger">Experience Feedback</span></h1>
-                <p class="subtitle">Share Your Experience About Academics & Faculty.</p>
+        <form class="surveyForm" id="surveyForm-1" data-section="1">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>How would you rate the teachers subject knowledge?</label>
+                    <select name="q_teacher_knowledge" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>How clear were the teachers explanations?</label>
+                    <select name="q_teacher_clarity" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
             </div>
-            <form class="surveyForm" id="surveyForm-2" data-section="2">
-                <div class="form-row">
-                    <div class="form-group"> <label>How would you rate the teaching quality?</label> <select name="q_teaching_quality" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                    <div class="form-group"> <label>How effective were the course materials?</label> <select name="q_course_materials" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>How punctual were the teachers for class?</label>
+                    <select name="q_teacher_punctuality" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>How engaging were the lectures?</label> <select name="q_lectures_engaging" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                    <div class="form-group"> <label>How helpful was the instructor?</label> <select name="q_instructor_helpful" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
+                <div class="form-group">
+                    <label>How well-prepared were the teachers for lectures?</label>
+                    <select name="q_teacher_preparedness" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>How organized was the course content?</label> <select name="q_course_organized" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                    <div class="form-group"> <label>How clear were the grading criteria?</label> <select name="q_grading_clear" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>How was communication from faculty?</label> <select name="q_faculty_comm" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                    <div class="form-group"> <label>How was the classroom environment?</label> <select name="q_classroom_env" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>How supportive was the administration?</label> <select name="q_admin_support" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Overall Your academic experience?</label> <select name="q_overall_academic" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Very Poor</option>
-                        </select> </div>
-                </div>
-                <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
-            </form>
-        </div>
-    </section>
-    <section class="survey-section" id="section-3">
-        <div class="survey-container">
-            <div class="survey-header">
-                <h1>Student <span class="text-danger">Experience Feedback</span></h1>
-                <p class="subtitle">Share Your Experience About Campus Facilities.</p>
             </div>
-            <form class="surveyForm" id="surveyForm-3" data-section="3">
-                <div class="form-row">
-                    <div class="form-group"> <label>Classrooms (Cleanliness, equipment, ventilation):</label> <select name="r_classrooms" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Library (Resources, study environment, service):</label> <select name="r_library" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>How effective were teachers keeping the class engaged?</label>
+                    <select name="q_teacher_engagement" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>Wi-Fi & Internet Connectivity:</label> <select name="r_wifi" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Cafeteria/Canteen (Quality, variety, hygiene):</label> <select name="r_cafeteria" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
+                <div class="form-group">
+                    <label>How approachable were the teachers for questions?</label>
+                    <select name="q_teacher_approachability" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>Transportation Services (Availability and cost):</label> <select name="r_transport" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Security Measures on Campus:</label> <select name="r_security" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>Hostel Facilities (Accommodation, food, maintenance):</label> <select name="r_hostel" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                </div>
-                <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
-            </form>
-        </div>
-    </section>
-    <section class="survey-section" id="section-4">
-        <div class="survey-container">
-            <div class="survey-header">
-                <h1>Student <span class="text-danger">Experience FeedBack</span></h1>
-                <p class="subtitle">Share Your Experience About Overall Environment.</p>
             </div>
-            <form class="surveyForm" id="surveyForm-4" data-section="4">
-                <div class="form-row">
-                    <div class="form-group"> <label>Overall feeling of safety and well-being on campus:</label> <select name="e_safety" required>
-                            <option value="">Select</option>
-                            <option>Very Safe</option>
-                            <option>Safe</option>
-                            <option>Neutral</option>
-                            <option>Unsafe</option>
-                            <option>Very Unsafe</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Effectiveness of anti-bullying/harassment policies:</label> <select name="e_anti_bullying" required>
-                            <option value="">Select</option>
-                            <option>Very Effective</option>
-                            <option>Effective</option>
-                            <option>Needs Improvement</option>
-                            <option>Poor</option>
-                            <option>Non-existent/Unaware</option>
-                        </select> </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>How fair were the teachers in grading?</label>
+                    <select name="q_teacher_fairness" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>Availability and quality of student societies/clubs:</label> <select name="e_societies" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Frequency and relevance of events and seminars:</label> <select name="e_events" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Lacking</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
+                <div class="form-group">
+                    <label>How well did the teachers use practical examples?</label>
+                    <select name="q_teacher_examples" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"> <label>Quality of Internship & Job Placement cell:</label> <select name="e_placement" required>
-                            <option value="">Select</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Average</option>
-                            <option>Poor</option>
-                            <option>Not Applicable</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Availability and quality of mental health support services:</label> <select name="e_mental_health" required>
-                            <option value="">Select</option>
-                            <option>Available and Good</option>
-                            <option>Available but Poor Quality</option>
-                            <option>Not Available/Unaware</option>
-                        </select> </div>
-                </div>
-                <div class="navigation-buttons"> <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> </div>
-            </form>
-        </div>
-    </section>
-    <section class="survey-section" id="section-5">
-        <div class=" survey-container">
-            <div class="survey-header">
-                <h1>Student <span class="text-danger">Experience FeedBack</span></h1>
-                <p class="subtitle">Your Suggestions will Allow Us to Improve Your Experience.</p>
             </div>
-            <form class="surveyForm" id="surveyForm-5" data-section="5">
-                <div class="question-group full-width-feedback"> <label for="final_feedback">Provide Your FeedBack:</label> <textarea id="final_feedback" name="final_feedback" placeholder="Type your suggestions here" required></textarea> </div>
-                <div class="navigation-buttons"> <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Submit Survey</button> </div>
-            </form>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>How appropriate were the pace of the lectures?</label>
+                    <select name="q_teacher_pace" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Overall professionalism of the teachers?</label>
+                    <select name="q_teacher_professionalism" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="navigation-buttons"> 
+                <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> 
+            </div>
+        </form>
+    </div>
+</section>
+<section class="survey-section" id="section-2">
+    <div class="survey-container">
+        <div class="survey-header">
+            <h1>Facility <span class="text-danger">Feedback</span></h1>
+            <p class="subtitle">Please rate the Classrooms and Computer Labs facilities.</p>
         </div>
-    </section>
+        <form class="surveyForm" id="surveyForm-2" data-section="2">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>How would you rate the cleanliness of classrooms?</label>
+                    <select name="q_class_cleanliness" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Condition of classroom furniture (Desks/Chairs)?</label>
+                    <select name="q_class_furniture" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quality of Projectors/Multimedia in classrooms?</label>
+                    <select name="q_class_multimedia" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lighting and ventilation in classrooms?</label>
+                    <select name="q_class_ventilation" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Performance speed of Computer Lab PCs?</label>
+                    <select name="q_lab_hardware" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Availability of required software/tools in Labs?</label>
+                    <select name="q_lab_software" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Condition of keyboards, mice, and screens?</label>
+                    <select name="q_lab_peripherals" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Internet connectivity speed within the Labs?</label>
+                    <select name="q_lab_internet" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Availability of Lab Instructors/Technical Support?</label>
+                    <select name="q_lab_support" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Availability of Labs for extra practice time?</label>
+                    <select name="q_lab_access" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="navigation-buttons"> 
+                <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> 
+            </div>
+        </form>
+    </div>
+</section>
+<section class="survey-section" id="section-3">
+    <div class="survey-container">
+        <div class="survey-header">
+            <h1>Campus <span class="text-danger">Environment</span></h1>
+            <p class="subtitle">Share your experience regarding safety, culture, and general atmosphere.</p>
+        </div>
+        <form class="surveyForm" id="surveyForm-3" data-section="3">
+            
+            <div class="form-row">
+                <div class="form-group"> 
+                    <label>How would you rate the overall safety on campus?</label> 
+                    <select name="env_safety" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+                <div class="form-group"> 
+                    <label>Behavior and cooperation of security staff?</label> 
+                    <select name="env_security_staff" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"> 
+                    <label>Effectiveness of anti-harassment/bullying policies?</label> 
+                    <select name="env_harassment_policy" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+                <div class="form-group"> 
+                    <label>Ease of reporting complaints or grievances?</label> 
+                    <select name="env_complaint_system" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"> 
+                    <label>Level of respect shown by administration to students?</label> 
+                    <select name="env_admin_respect" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+                <div class="form-group"> 
+                    <label>Gender sensitivity and respect across campus?</label> 
+                    <select name="env_gender_respect" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"> 
+                    <label>Cleanliness of common areas (grounds, corridors)?</label> 
+                    <select name="env_cleanliness" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+                <div class="form-group"> 
+                    <label>Quality of campus greenery and sitting areas?</label> 
+                    <select name="env_greenery" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"> 
+                    <label>Enforcement of student discipline rules?</label> 
+                    <select name="env_discipline" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+                <div class="form-group"> 
+                    <label>Overall peacefulness of the study environment?</label> 
+                    <select name="env_peacefulness" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select> 
+                </div>
+            </div>
+
+            <div class="navigation-buttons"> 
+                <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> 
+            </div>
+        </form>
+    </div>
+</section>
+<section class="survey-section" id="section-4">
+    <div class="survey-container">
+        <div class="survey-header">
+            <h1>Transport & <span class="text-danger">Canteen</span></h1>
+            <p class="subtitle">Please evaluate the university transport services and cafeteria facilities.</p>
+        </div>
+        <form class="surveyForm" id="surveyForm-4" data-section="4">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Availability and coverage of transport routes?</label>
+                    <select name="trans_routes" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Physical condition and cleanliness of buses/vans?</label>
+                    <select name="trans_condition" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Punctuality of transport arrival/departure?</label>
+                    <select name="trans_punctuality" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Behavior and cooperation of transport staff?</label>
+                    <select name="trans_staff" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Affordability of transport charges/fares?</label>
+                    <select name="trans_cost" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hygiene and cleanliness of the canteen area?</label>
+                    <select name="cant_hygiene" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Freshness and taste of the food served?</label>
+                    <select name="cant_quality" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Affordability/Pricing of food items?</label>
+                    <select name="cant_price" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Variety of food options available in the menu?</label>
+                    <select name="cant_variety" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Speed of service and staff behavior in canteen?</label>
+                    <select name="cant_service" required>
+                        <option value="">Select</option>
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Average</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Very Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="navigation-buttons"> 
+    <button type="submit" class="btn btn-primary">Next <i class="fas fa-arrow-right"></i></button> 
+</div>
+        </form>
+    </div>
+</section>
+<section class="survey-section" id="section-5">
+    <div class="survey-container">
+        <div class="survey-header">
+            <h1>Confidential <span class="text-danger">Complaints & Feedback</span></h1>
+            <p class="subtitle">Feel free to register a specific complaint about any teacher, staff member, or department.</p>
+        </div>
+        <form class="surveyForm" id="surveyForm-5" data-section="5">
+            
+            <div class="form-row">
+                <div class="form-group question-group full-width-feedback">
+                    <label>Name of the Person or Department you have a complaint about (Optional):</label>
+                    <input type="text" name="complaint_target" placeholder=" Mr. XYZ, Admin Office, Security Guard" class="form-control">
+                </div>
+            </div>
+
+            <div class="question-group full-width-feedback"> 
+                <label for="final_feedback">Please describe your complaint or suggestion in detail:</label> 
+                <textarea id="final_feedback" name="final_feedback" placeholder="Type your complaint or suggestion here freely" required></textarea> 
+            </div>
+            
+            <div class="navigation-buttons"> 
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Submit Survey</button> 
+            </div>
+        </form>
+    </div>
+</section>
 </div>
 
 
 <div id="success-message">
     <div class="success-content">
         <h1>Successfully Submitted!</h1>
-        <p>Thank you for completing the Student Experience Feedback survey. <br> Redirecting to homepage</p>
+        <p>Thank you for completing the Student Experience Feedback survey. <br> Redirecting to Homepage</p>
     </div>
 </div>
 <div id="toast-container"></div>

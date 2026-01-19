@@ -10,11 +10,6 @@
             <p>Real-time analysis of student feedback.</p>
         </div>
         <div class="date-filter">
-            <select class="form-select">
-                <option>Last 30 Days</option>
-                <option>This Semester</option>
-                <option>All Time</option>
-            </select>
             <button class="btn btn-primary"><i class="fas fa-download"></i> Print PDF</button>
         </div>
     </div>
@@ -30,8 +25,8 @@
         <div class="stat-card">
             <div class="icon-box green"><i class="fas fa-smile"></i></div>
             <div>
-                <h3>4.2 / 5.0</h3>
-                <span>Overall Satisfaction</span>
+                <h3>50/ 100</h3>
+                <span>Response Percentage</span>
             </div>
         </div>
         <div class="stat-card">
@@ -45,7 +40,7 @@
             <div class="icon-box orange"><i class="fas fa-exclamation-circle"></i></div>
             <div>
                 <h3>15</h3>
-                <span>Critical Flags</span>
+                <span>Pending Surveys</span>
             </div>
         </div>
     </div>
@@ -53,7 +48,7 @@
     <div class="charts-row">
         <div class="chart-card">
             <div class="card-header">
-                <h4><i class="fas fa-university"></i> Responses by Department</h4>
+                <h4><i class="fas fa-university"></i> Responses by Batch</h4>
             </div>
             <div class="chart-body">
                 <canvas id="deptChart"></canvas>
@@ -61,7 +56,7 @@
         </div>
         <div class="chart-card">
             <div class="card-header">
-                <h4><i class="fas fa-user-graduate"></i> Semester Distribution</h4>
+                <h4><i class="fas fa-user-graduate"></i> Semester </h4>
             </div>
             <div class="chart-body">
                 <canvas id="semesterChart"></canvas>
@@ -71,7 +66,7 @@
 
     <div class="chart-card full-width">
         <div class="card-header">
-            <h4><i class="fas fa-chalkboard-teacher"></i> Academic Experience (Quality Ratings)</h4>
+            <h4><i class="fas fa-chalkboard-teacher"></i> Teachers</h4>
         </div>
         <div class="chart-body">
             <canvas id="academicChart" height="100"></canvas>
