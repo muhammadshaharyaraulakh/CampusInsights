@@ -30,6 +30,7 @@ try {
     }
 
     $updates = [];
+    $is_semester_updated = false; // New Flag
 
     if ($batch_year !== '' && $batch_year !== $batch['batch_year']) {
 
@@ -63,6 +64,7 @@ try {
         }
 
         $updates[] = "current_semester = $update_semester";
+        $is_semester_updated = true; // Mark that semester is changing
     }
 
     if ($status !== '') {
@@ -83,6 +85,18 @@ try {
 
     $stmt = $connection->prepare($sql);
     $stmt->execute();
+
+    // === NEW CODE START: Reset Survey Progress if Semester Updated ===
+    if ($is_semester_updated) {
+        $stmt = $connection->prepare("
+            UPDATE user u
+            JOIN batch_sections bs ON u.batch_section_id = bs.id
+            SET u.survey_progress = 'pending'
+            WHERE bs.batch_id = $batch_id
+        ");
+        $stmt->execute();
+    }
+    // === NEW CODE END ===
 
     if ($status === 'disable') {
         $stmt = $connection->prepare("
@@ -114,3 +128,4 @@ try {
 
 echo json_encode($response);
 exit;
+?>

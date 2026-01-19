@@ -6,7 +6,6 @@ require __DIR__ . "/../function/function.php";
 blockAccess();
 $MAX_SECTIONS = 5;
 $user_id = $_SESSION['id'];
-
 $current_section = (int)($_POST['section_number'] ?? 0);
 
 // Validation
@@ -15,31 +14,80 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || $current_section < 1 || $current_se
     exit;
 }
 
-$json_data = json_encode($_POST);
-$column_name = "section_" . $current_section;
-
 try {
-    // 1. Insert/Update Survey Data
-    $sql = "INSERT INTO survey_progress (user_id, $column_name) 
-            VALUES (:uid, :data) 
+    // ======================================================
+    // 1. GET SEMESTER VIA JOIN (User -> BatchSection -> Batches)
+    // ======================================================
+    
+    $query = "SELECT b.current_semester 
+              FROM user u
+              JOIN batch_sections bs ON u.batch_section_id = bs.id
+              JOIN batches b ON bs.batch_id = b.id
+              WHERE u.id = :uid LIMIT 1";
+
+    $stmt = $connection->prepare($query);
+    $stmt->execute([':uid' => $user_id]);
+    $batchData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$batchData) {
+        echo json_encode(['success' => false, 'message' => 'Batch info not found for user.']);
+        exit;
+    }
+
+    $semester = (int)$batchData['current_semester'];
+    
+    // ======================================================
+    // 2. CALCULATE SESSION (Spring/Fall)
+    // ======================================================
+    
+    $current_year = date("Y");
+    $session_name = "";
+
+    // Logic: Even Semesters = Spring, Odd Semesters = Fall
+    // (Example: Sem 1 = Fall, Sem 2 = Spring, Sem 3 = Fall...)
+    if ($semester % 2 == 0) {
+        $session_name = "Spring";
+    } else {
+        $session_name = "Fall";
+    }
+
+    // Final Format: "2026(Spring)"
+    $year_session = "$current_year($session_name)";
+
+    // ======================================================
+    // 3. SAVE DATA (With Unique Year/Session Key)
+    // ======================================================
+
+    $json_data = json_encode($_POST);
+    $column_name = "section_" . $current_section;
+
+    // This query uses the UNIQUE KEY (user_id, year_session)
+    // If a record exists for "User 1" in "2026(Spring)", it updates it.
+    // If not, it creates a new row.
+    $sql = "INSERT INTO survey_progress (user_id, year_session, student_semester, $column_name) 
+            VALUES (:uid, :ysession, :sem, :data) 
             ON DUPLICATE KEY UPDATE $column_name = :data_update";
             
     $stmt = $connection->prepare($sql);
     $stmt->execute([
         ':uid' => $user_id,
+        ':ysession' => $year_session,
+        ':sem' => $semester,
         ':data' => $json_data,
         ':data_update' => $json_data
     ]);
 
-    // 2. Activity Log Logic
+    // ======================================================
+    // 4. LOGS AND COMPLETION STATUS
+    // ======================================================
+    
     $is_final = ($current_section == $MAX_SECTIONS);
     $activity_type = null;
 
     if ($current_section === 1) {
-        $checkStmt = $connection->prepare("SELECT started_at, updated_at FROM survey_progress WHERE user_id = ?");
-        $checkStmt->execute([$user_id]);
-        
-        // === FIX IS HERE: Force FETCH_ASSOC to get an array ===
+        // Check timestamps to see if this specific session row was just created
+        $checkStmt = $connection->prepare("SELECT started_at, updated_at FROM survey_progress WHERE user_id = ? AND year_session = ?");
+        $checkStmt->execute([$user_id, $year_session]);
         $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
         
         if ($row && $row['started_at'] == $row['updated_at']) {
@@ -51,11 +99,13 @@ try {
 
     if ($activity_type) {
         $ua_details = parse_user_agent_details($_SERVER['HTTP_USER_AGENT']);
-        
-        // Safety check: Ensure ua_details is handled correctly (Object vs Array)
         $browser_name = is_object($ua_details) ? $ua_details->browser : ($ua_details['browser'] ?? 'Unknown');
         
-        $log_details = json_encode(['browser' => $browser_name, 'section' => $current_section]);
+        $log_details = json_encode([
+            'browser' => $browser_name, 
+            'section' => $current_section, 
+            'session' => $year_session
+        ]);
 
         $logStmt = $connection->prepare("INSERT INTO ActivityLog (user_id, activity_type, details, ip_address, user_agent) VALUES (:uid, :atype, :details, :ip, :ua)");
         $logStmt->execute([
@@ -64,7 +114,7 @@ try {
         ]);
     }
 
-    // 3. Final Submission Status Update
+    // Final Submission: Update User Status
     if ($is_final) {
         $userUpdateStmt = $connection->prepare("UPDATE user SET survey_progress = 'completed' WHERE id = :uid");
         $userUpdateStmt->execute([':uid' => $user_id]);

@@ -3,9 +3,6 @@ header('Content-Type: application/json');
 require __DIR__ . "/../../config/config.php";
 require __DIR__ . "/../../function/function.php";
 
-
-
-// 2. Get User Question
 $input = json_decode(file_get_contents('php://input'), true);
 $question = $input['question'] ?? '';
 
@@ -15,40 +12,78 @@ if (empty($question)) {
 }
 
 try {
-    // 3. Fetch Real Data from Database (Sections 2 to 5 only)
-    $stmt = $connection->prepare("
-        SELECT section_number, section_data 
-        FROM survey_progress 
-        WHERE section_number BETWEEN 2 AND 5 
-        ORDER BY id DESC LIMIT 50
-    ");
-    $stmt->execute();
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $currentYear = date('Y');
+    
+    // 1. Determine Active Sessions based on Enabled Batches
+    $batchStmt = $connection->prepare("SELECT current_semester FROM batches WHERE status = 'enable'");
+    $batchStmt->execute();
+    $activeBatches = $batchStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 4. Prepare Data for AI Context
-    $context_data = "";
-    foreach ($rows as $row) {
-        $data = json_decode($row['section_data'], true);
-        $section_name = getSectionName($row['section_number']);
-        
-        $readable_values = [];
-        foreach ($data as $key => $val) {
-            $clean_key = str_replace(['q_', 'r_', 'e_', '_'], ['', '', '', ' '], $key);
-            $readable_values[] = "$clean_key: $val";
-        }
-        $context_data .= "Section [$section_name]: " . implode(", ", $readable_values) . "\n";
-    }
-
-    if (empty($context_data)) {
-        echo json_encode(['reply' => "I checked the database, but there is no survey data available yet to analyze."]);
+    if (empty($activeBatches)) {
+        echo json_encode(['reply' => "No active batches found to analyze."]);
         exit;
     }
 
-    // --- API KEY SETUP ---
-    // Yahan apni key paste karein jo aapne screenshot mein dikhayi hai
-    $myApiKey = "AIzaSyC_VtqOv71R4uLut9Wu6Pm3rCiWt8_COcA"; 
+    $validSessions = [];
+    foreach ($activeBatches as $batch) {
+        $sem = (int)$batch['current_semester'];
+        
+        // Logic: Even = Spring, Odd = Fall
+        $season = ($sem % 2 == 0) ? "Spring" : "Fall";
+        $sessionString = "$currentYear($season)";
+        
+        if (!in_array($sessionString, $validSessions)) {
+            $validSessions[] = $sessionString;
+        }
+    }
 
-    // 5. Call Gemini AI
+    if (empty($validSessions)) {
+        echo json_encode(['reply' => "Could not determine valid sessions."]);
+        exit;
+    }
+
+    // 2. Fetch Data for ALL Sections (1 to 5)
+    $placeholders = implode(',', array_fill(0, count($validSessions), '?'));
+    
+    $sql = "SELECT section_1, section_2, section_3, section_4, section_5 
+            FROM survey_progress 
+            WHERE year_session IN ($placeholders) 
+            ORDER BY started_at DESC LIMIT 50";
+
+    $stmt = $connection->prepare($sql);
+    $stmt->execute($validSessions);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // 3. Prepare Data for AI
+    $context_data = "";
+    
+    foreach ($rows as $row) {
+        foreach ($row as $colName => $jsonContent) {
+            // Skip empty columns
+            if (empty($jsonContent)) continue;
+
+            $data = json_decode($jsonContent, true);
+            if (!$data) continue;
+
+            $sectionName = getSectionName($colName);
+            $readable_values = [];
+
+            foreach ($data as $key => $val) {
+                // Clean up keys (remove prefixes like q_, r_, etc.)
+                $clean_key = str_replace(['q_', 'r_', 'e_', '_'], ['', '', '', ' '], $key);
+                $readable_values[] = "$clean_key: $val";
+            }
+            $context_data .= "Section [$sectionName]: " . implode(", ", $readable_values) . "\n";
+        }
+    }
+
+    if (empty($context_data)) {
+        echo json_encode(['reply' => "I checked the database, but there is no survey data available for the active sessions ($placeholders)."]);
+        exit;
+    }
+
+    $myApiKey = "AIzaSyAU7VNy4sBbfgAecD6mLpcPdoWxcgymn1Y"; 
+
     $ai_reply = callGeminiAPI($question, $context_data, $myApiKey);
 
     echo json_encode(['reply' => $ai_reply]);
@@ -57,26 +92,23 @@ try {
     echo json_encode(['reply' => "Error analyzing data: " . $e->getMessage()]);
 }
 
-// --- Helper Functions ---
-
-function getSectionName($num) {
-    switch ($num) {
-        case 2: return "Academics";
-        case 3: return "Facilities";
-        case 4: return "Environment";
-        case 5: return "Suggestions";
+// Helper to name sections
+function getSectionName($colName) {
+    switch ($colName) {
+        case 'section_1': return "Faculty Evaluation"; // Added Section 1
+        case 'section_2': return "Academics & Labs";
+        case 'section_3': return "Facilities";
+        case 'section_4': return "Environment & Transport";
+        case 'section_5': return "Suggestions/Complaints";
         default: return "General";
     }
 }
 
 function callGeminiAPI($question, $context, $apiKey) {
-// ✅ Using Gemini 2.0 Flash (Fast & Available in your list)
-// ✅ Safe Option: 'gemini-flash-latest' automatically picks the working Free model
-$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $apiKey;
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $apiKey;
     
-    // AI Instructions
     $prompt = "You are an expert Data Analyst for a University Survey System. 
-    Below is the raw feedback data from students (JSON format):
+    Below is the raw feedback data from students (JSON format) for the current active semester:
     
     --- DATA START ---
     $context
@@ -112,7 +144,6 @@ $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lat
         return "Connection Error: " . curl_error($ch);
     }
 
-
     $json = json_decode($response, true);
     
     if (isset($json['error'])) {
@@ -121,3 +152,4 @@ $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lat
 
     return $json['candidates'][0]['content']['parts'][0]['text'] ?? "Sorry, I couldn't analyze the data at this moment.";
 }
+?>

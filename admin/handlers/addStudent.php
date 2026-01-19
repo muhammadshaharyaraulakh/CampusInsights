@@ -46,6 +46,7 @@ try {
         throw new Exception("Invalid email address.");
     }
 
+    // Reg No Validation
     if (!preg_match('/^[A-Z]{2,5}-(M|E)[1-3]-\d{2}-\d{2}$/', $reg_no)) {
         $field = "reg_no";
         throw new Exception("Invalid registration number format.");
@@ -54,7 +55,7 @@ try {
         throw new Exception("Registration number does not match selected section.");
     }
 
-    // --- CHECK BATCH CURRENT SEMESTER ---
+    // --- 1. CHECK BATCH & SEMESTER ---
     $stmt = $connection->prepare("SELECT current_semester FROM batches WHERE id = :id LIMIT 1");
     $stmt->execute([':id' => $batch_id]);
     $batch = $stmt->fetch(PDO::FETCH_OBJ);
@@ -69,7 +70,25 @@ try {
         throw new Exception("Semester does not match the batch's current semester.");
     }
 
-    // --- CHECK DUPLICATES ---
+    // --- 2. GET CORRECT BATCH_SECTION_ID (Yeh Logic Missing Thi) ---
+    // Hum check karenge ke kya is batch ke liye ye section (e.g., M1) exist karta hai?
+    $secStmt = $connection->prepare("SELECT id FROM batch_sections WHERE batch_id = :bid AND section_name = :sec LIMIT 1");
+    $secStmt->execute([':bid' => $batch_id, ':sec' => $section]);
+    $sectionRow = $secStmt->fetch(PDO::FETCH_OBJ);
+
+    $final_section_id = null;
+
+    if ($sectionRow) {
+        // Agar section mil gaya to uski ID le lo
+        $final_section_id = $sectionRow->id;
+    } else {
+        // Agar section nahi mila (First time student add ho raha hai is section mein), to create karo
+        $createSec = $connection->prepare("INSERT INTO batch_sections (batch_id, section_name) VALUES (:bid, :sec)");
+        $createSec->execute([':bid' => $batch_id, ':sec' => $section]);
+        $final_section_id = $connection->lastInsertId();
+    }
+
+    // --- 3. CHECK DUPLICATES (User Table) ---
     $stmt = $connection->prepare("
         SELECT id FROM user WHERE email = :email OR registration_no = :reg_no LIMIT 1
     ");
@@ -83,21 +102,22 @@ try {
         throw new Exception("Email or registration number already exists.");
     }
 
-    // --- INSERT STUDENT ---
+    // --- 4. INSERT STUDENT (Corrected) ---
+    // Ab hum :final_sec_id use karenge, :batch_id nahi.
     $stmt = $connection->prepare("
         INSERT INTO user (username, email, registration_no, batch_section_id) 
-        VALUES (:name, :email, :reg_no, :batch_id)
+        VALUES (:name, :email, :reg_no, :final_sec_id)
     ");
     $stmt->execute([
-        ':name'     => $name,
-        ':email'    => $email,
-        ':reg_no'   => $reg_no,
-        ':batch_id' => $batch_id
+        ':name'         => $name,
+        ':email'        => $email,
+        ':reg_no'       => $reg_no,
+        ':final_sec_id' => $final_section_id // Using correct ID from batch_sections
     ]);
 
     $response = [
         "status"  => "success",
-        "message" => "Student added successfully."
+        "message" => "Student added successfully to Batch Section."
     ];
 
 } catch (Exception $e) {
@@ -110,3 +130,4 @@ try {
 
 echo json_encode($response);
 exit;
+?>
