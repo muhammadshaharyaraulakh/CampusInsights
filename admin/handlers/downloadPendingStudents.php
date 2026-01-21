@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../config/config.php";
-
+require_once __DIR__."/../../function/function.php";
+AdminAccess();
 $section_id = $_GET['section_id'] ?? '';
 
 if (!$section_id || !ctype_digit($section_id)) {

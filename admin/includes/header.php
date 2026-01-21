@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . "/../../config/config.php";
+require_once __DIR__."/../../function/function.php";
+AdminAccess();
 ?>
 <!DOCTYPE html>
 <html lang="en">

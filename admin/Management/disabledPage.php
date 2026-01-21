@@ -1,6 +1,8 @@
 <?php
 require __DIR__ . "/../../config/config.php";
 require __DIR__ . "/../../includes/header.php";
+require_once __DIR__."/../../function/function.php";
+AdminAccess();
 ?>
 <section class="error-section">
   <div class="container error-container">

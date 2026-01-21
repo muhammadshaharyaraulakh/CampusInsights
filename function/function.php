@@ -4,17 +4,32 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     header("Location: /pages/404.php");
     exit;
 }
-function blockDirectAccess() {
-    if($_SERVER['REQUEST_METHOD'] === 'GET' ) {
+function RoleBasedAccess()
+{
+    if ($_SESSION['role'] === "admin") {
         header("Location: /pages/404.php");
         exit;
     }
 }
-function blockAccess(){
-    if(empty($_SESSION['id'])) {
+function AdminAccess(){
+    if ($_SESSION['role'] !== "admin") {
         header("Location: /pages/404.php");
         exit;
+    }
 }
+function blockDirectAccess()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        header("Location: /pages/404.php");
+        exit;
+    }
+}
+function blockAccess()
+{
+    if (empty($_SESSION['id'])) {
+        header("Location: /pages/404.php");
+        exit;
+    }
 }
 function generateOtp(int $length = 16, string $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'): string
 {
@@ -22,7 +37,7 @@ function generateOtp(int $length = 16, string $characters = 'abcdefghijklmnopqrs
     if (empty($characters)) {
         throw new Exception("Character set for OTP generation cannot be empty.");
     }
-    
+
     $maxIndex = strlen($characters) - 1;
 
     for ($i = 0; $i < $length; $i++) {
@@ -33,7 +48,8 @@ function generateOtp(int $length = 16, string $characters = 'abcdefghijklmnopqrs
 };
 
 
-function parse_user_agent_details($userAgent) {
+function parse_user_agent_details($userAgent)
+{
     if (empty($userAgent) || strtolower($userAgent) === 'unknown') {
         return ['browser' => 'Unknown', 'os' => 'Unknown'];
     }
@@ -52,7 +68,7 @@ function parse_user_agent_details($userAgent) {
     } elseif (preg_match('/Ubuntu/i', $userAgent)) {
         $os = 'Ubuntu';
     } elseif (preg_match('/Linux/i', $userAgent)) {
-        $os = 'Linux'; 
+        $os = 'Linux';
     }
 
     if (preg_match('/Edg/i', $userAgent)) {

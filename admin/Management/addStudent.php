@@ -1,4 +1,6 @@
 <?php require_once __DIR__ . "/../includes/header.php"; 
+require_once __DIR__."/../../function/function.php";
+AdminAccess();
 $stmt = $connection->prepare("
     SELECT * 
     FROM batches 

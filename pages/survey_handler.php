@@ -19,13 +19,13 @@ try {
     // 1. GET SEMESTER VIA JOIN (User -> BatchSection -> Batches)
     // ======================================================
     
-    $query = "SELECT b.current_semester 
+
+
+    $stmt = $connection->prepare("SELECT b.current_semester 
               FROM user u
               JOIN batch_sections bs ON u.batch_section_id = bs.id
               JOIN batches b ON bs.batch_id = b.id
-              WHERE u.id = :uid LIMIT 1";
-
-    $stmt = $connection->prepare($query);
+              WHERE u.id = :uid LIMIT 1");
     $stmt->execute([':uid' => $user_id]);
     $batchData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -36,39 +36,24 @@ try {
 
     $semester = (int)$batchData['current_semester'];
     
-    // ======================================================
-    // 2. CALCULATE SESSION (Spring/Fall)
-    // ======================================================
+
     
     $current_year = date("Y");
     $session_name = "";
-
-    // Logic: Even Semesters = Spring, Odd Semesters = Fall
-    // (Example: Sem 1 = Fall, Sem 2 = Spring, Sem 3 = Fall...)
     if ($semester % 2 == 0) {
         $session_name = "Spring";
     } else {
         $session_name = "Fall";
     }
-
-    // Final Format: "2026(Spring)"
     $year_session = "$current_year($session_name)";
 
-    // ======================================================
-    // 3. SAVE DATA (With Unique Year/Session Key)
-    // ======================================================
 
     $json_data = json_encode($_POST);
     $column_name = "section_" . $current_section;
 
-    // This query uses the UNIQUE KEY (user_id, year_session)
-    // If a record exists for "User 1" in "2026(Spring)", it updates it.
-    // If not, it creates a new row.
-    $sql = "INSERT INTO survey_progress (user_id, year_session, student_semester, $column_name) 
+    $stmt = $connection->prepare("INSERT INTO survey_progress (user_id, year_session, student_semester, $column_name) 
             VALUES (:uid, :ysession, :sem, :data) 
-            ON DUPLICATE KEY UPDATE $column_name = :data_update";
-            
-    $stmt = $connection->prepare($sql);
+            ON DUPLICATE KEY UPDATE $column_name = :data_update");
     $stmt->execute([
         ':uid' => $user_id,
         ':ysession' => $year_session,
@@ -77,15 +62,12 @@ try {
         ':data_update' => $json_data
     ]);
 
-    // ======================================================
-    // 4. LOGS AND COMPLETION STATUS
-    // ======================================================
+
     
     $is_final = ($current_section == $MAX_SECTIONS);
     $activity_type = null;
 
     if ($current_section === 1) {
-        // Check timestamps to see if this specific session row was just created
         $checkStmt = $connection->prepare("SELECT started_at, updated_at FROM survey_progress WHERE user_id = ? AND year_session = ?");
         $checkStmt->execute([$user_id, $year_session]);
         $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -114,7 +96,6 @@ try {
         ]);
     }
 
-    // Final Submission: Update User Status
     if ($is_final) {
         $userUpdateStmt = $connection->prepare("UPDATE user SET survey_progress = 'completed' WHERE id = :uid");
         $userUpdateStmt->execute([':uid' => $user_id]);

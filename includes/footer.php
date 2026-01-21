@@ -29,9 +29,9 @@
              <h4>Connect</h4>
              <p>Stay informed about our results and institutional changes.</p>
              <div class="social-icons">
-                 <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                 <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                 <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                 <a href="" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                 <a href="" title="Twitter"><i class="fab fa-twitter"></i></a>
+                 <a href="" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
              </div>
          </div>
      </div>

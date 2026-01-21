@@ -8,7 +8,11 @@ require __DIR__ . "/../includes/header.php";
       <h1>404</h1>
       <h2> Not Found</h2>
       <p>Oops! The page you are looking for doesn't exist or has been moved.</p>
-      <a href="/index.php" class="btn btn-primary">Go To Home</a>
+      <?php if($_SESSION['role']==="admin"): ?>
+        <a href="/admin/admin.php" class="btn btn-primary">Go To Admin Panel</a>
+      <?php else: ?>
+        <a href="/index.php" class="btn btn-primary">Go To Home</a>
+        <?php endif; ?>
     </div>
   </div>
 </section>

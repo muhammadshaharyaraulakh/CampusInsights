@@ -1,7 +1,8 @@
 <?php
-
+require __DIR__."/../config/config.php";
 require __DIR__ . '/../includes/header.php';
-require __DIR__ . '/../functions/functions.php';
+require __DIR__ . '/../function/function.php';
+RoleBasedAccess();
 blockAccess();
 
 $currentName = $_SESSION['name'] ?? $_SESSION['username'] ?? '';
@@ -40,7 +41,7 @@ $currentEmail = $_SESSION['email'] ?? '';
             <div class="form-group">
                 <label for="message">Your Message</label>
                 <textarea id="message" name="message" class="form-input" rows="6" 
-                          placeholder="Tell me more about your project..." required></textarea>
+                          placeholder="Message" required></textarea>
             </div>
 
             <div class="form-submit">

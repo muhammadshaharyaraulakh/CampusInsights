@@ -2,6 +2,7 @@
 require __DIR__ . "/../includes/header.php";
 require __DIR__ . "/../function/function.php";
 blockAccess();
+RoleBasedAccess();
 $user_id = $_SESSION['id'];
 
 $account = $connection->prepare("SELECT created_at FROM user WHERE id = :id LIMIT 1");

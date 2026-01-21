@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../includes/header.php";
-
+require_once __DIR__."/../../function/function.php";
+AdminAccess();
 $batch_id = $_GET['id'] ?? 0;
 if (!$batch_id || !ctype_digit($batch_id)) {
     header("Location: /pages/404.php");

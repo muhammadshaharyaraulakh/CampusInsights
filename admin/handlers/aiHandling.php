@@ -2,7 +2,8 @@
 header('Content-Type: application/json');
 require __DIR__ . "/../../config/config.php";
 require __DIR__ . "/../../function/function.php";
-
+AdminAccess();
+blockDirectAccess();
 $input = json_decode(file_get_contents('php://input'), true);
 $question = $input['question'] ?? '';
 
@@ -14,7 +15,6 @@ if (empty($question)) {
 try {
     $currentYear = date('Y');
     
-    // 1. Determine Active Sessions based on Enabled Batches
     $batchStmt = $connection->prepare("SELECT current_semester FROM batches WHERE status = 'enable'");
     $batchStmt->execute();
     $activeBatches = $batchStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -27,8 +27,6 @@ try {
     $validSessions = [];
     foreach ($activeBatches as $batch) {
         $sem = (int)$batch['current_semester'];
-        
-        // Logic: Even = Spring, Odd = Fall
         $season = ($sem % 2 == 0) ? "Spring" : "Fall";
         $sessionString = "$currentYear($season)";
         
@@ -42,7 +40,7 @@ try {
         exit;
     }
 
-    // 2. Fetch Data for ALL Sections (1 to 5)
+
     $placeholders = implode(',', array_fill(0, count($validSessions), '?'));
     
     $sql = "SELECT section_1, section_2, section_3, section_4, section_5 
@@ -54,12 +52,10 @@ try {
     $stmt->execute($validSessions);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3. Prepare Data for AI
     $context_data = "";
     
     foreach ($rows as $row) {
         foreach ($row as $colName => $jsonContent) {
-            // Skip empty columns
             if (empty($jsonContent)) continue;
 
             $data = json_decode($jsonContent, true);
@@ -69,7 +65,6 @@ try {
             $readable_values = [];
 
             foreach ($data as $key => $val) {
-                // Clean up keys (remove prefixes like q_, r_, etc.)
                 $clean_key = str_replace(['q_', 'r_', 'e_', '_'], ['', '', '', ' '], $key);
                 $readable_values[] = "$clean_key: $val";
             }
@@ -82,7 +77,7 @@ try {
         exit;
     }
 
-    $myApiKey = "AIzaSyAU7VNy4sBbfgAecD6mLpcPdoWxcgymn1Y"; 
+    $myApiKey = ""; 
 
     $ai_reply = callGeminiAPI($question, $context_data, $myApiKey);
 
@@ -92,10 +87,10 @@ try {
     echo json_encode(['reply' => "Error analyzing data: " . $e->getMessage()]);
 }
 
-// Helper to name sections
+
 function getSectionName($colName) {
     switch ($colName) {
-        case 'section_1': return "Faculty Evaluation"; // Added Section 1
+        case 'section_1': return "Faculty Evaluation"; 
         case 'section_2': return "Academics & Labs";
         case 'section_3': return "Facilities";
         case 'section_4': return "Environment & Transport";

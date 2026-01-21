@@ -48,9 +48,8 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // Selectors
     const togglePasswordBtn = document.querySelector(".toggle-password");
-    const form = document.getElementById("adminLoginForm"); // Matches HTML ID now
+    const form = document.getElementById("adminLoginForm"); 
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const emailError = document.getElementById("emailError");
@@ -58,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const generalError = document.getElementById("formMessage");
     const spinner = document.getElementById("spinner");
 
-    // Toggle Password Visibility
     togglePasswordBtn.addEventListener("click", () => {
         const icon = togglePasswordBtn.querySelector("i");
         if (passwordInput.type === "password") {
@@ -72,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Clear errors on input
+
     [emailInput, passwordInput].forEach(input => {
         input.addEventListener("input", () => {
             emailError.textContent = "";
@@ -81,21 +79,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Handle Submission
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        // Reset UI
         emailError.textContent = "";
         passwordError.textContent = "";
         generalError.textContent = "";
         spinner.style.display = "block";
-
-        // Artificial delay for UX (optional)
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         const formData = new FormData(form);
-        // Explicitly set trimmed values
         formData.set("email", emailInput.value.trim());
         formData.set("password", passwordInput.value.trim());
 

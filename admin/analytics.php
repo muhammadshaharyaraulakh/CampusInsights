@@ -8,8 +8,7 @@ require_once __DIR__ . "/../config/config.php";
 
 $currentYear = date('Y');
 
-// A. Identify Active Session & Semesters directly from Batches Table
-// Hum sirf 'enable' batches uthayenge taake X-Axis set ho jaye
+
 $batchStmt = $connection->prepare("SELECT id, current_semester FROM batches WHERE status = 'enable' ORDER BY current_semester ASC");
 $batchStmt->execute();
 $activeBatches = $batchStmt->fetchAll(PDO::FETCH_ASSOC);

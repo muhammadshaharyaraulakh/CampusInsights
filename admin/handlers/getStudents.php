@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../config/config.php";
-
+require_once __DIR__."/../../function/function.php";
+AdminAccess();
 header("Content-Type: application/json");
 
 $section_id = $_GET['section_id'] ?? '';

@@ -1,5 +1,7 @@
 <?php
-require __DIR__ . "/../config/config.php";
+require_once __DIR__ . "/../config/config.php";
+require_once __DIR__."/../function/function.php";
+RoleBasedAccess();
 ?>
 <!DOCTYPE html>
 <html lang="en">

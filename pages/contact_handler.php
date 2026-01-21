@@ -9,7 +9,8 @@ require __DIR__ . '/../config/config.php';
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../functions/functions.php';
 
-blockDirectAccess() ;
+blockDirectAccess();
+RoleBasedAccess();
 
 $subject = trim($_POST['subject'] ?? '');
 $message = trim($_POST['message'] ?? '');
